@@ -7,7 +7,8 @@ var config = {
     type:Phaser.AUTO,
     width:gamePrefs.gameWidth,
     height:gamePrefs.gameHeight,
-    scene:[level1], //Array con las scenes/niveles
+    //scene:[level1], //Array con las scenes/niveles
+    scene:[test1], //Array con las scenes/niveles
     render:{
         pixelArt:true
     },
