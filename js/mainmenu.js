@@ -16,7 +16,6 @@ class MainMenu extends Phaser.Scene {
   create() {
     const { width, height } = this.scale;
 
-    
     this.resolved = {};
     Array.from(new Set(this.playOrder)).forEach(name => {
       const k = this.exts.map(ext => `${name}__${ext}`).find(kk => this.textures.exists(kk));
@@ -24,7 +23,7 @@ class MainMenu extends Phaser.Scene {
     });
 
     // -------- ajustes de tamaño y posición --------
-    this.scaleFactor = 0.45;   
+    this.scaleFactor = 0.45;              
     this.topY = Math.round(height * 0.20); 
     // ----------------------------------------------
 
@@ -36,12 +35,41 @@ class MainMenu extends Phaser.Scene {
 
     fitInside(this.slide, width, height, this.scaleFactor);
 
+    // Texto 
+    const titleY = this.topY + (this.slide.displayHeight / 2) + 8;
+    this.title = this.add.text(width / 2, titleY, 'HWANG SHINWEI', {
+      fontFamily: '"Press Start 2P"',
+      fontSize: '18px',          
+      color: '#edc001',
+      stroke: '',
+      strokeThickness: 4,
+      align: 'center'
+    }).setOrigin(0.5, -3).setDepth(11);
+    if (this.title.setLetterSpacing) this.title.setLetterSpacing(-1);
+
+    this.hiScoreLabel = this.add.text(width / 2, height - 24, 'HI SCORE', {
+      fontFamily: '"Press Start 2P"',
+      fontSize: '14px',
+      color: '#6495ed',
+      stroke: '',
+      strokeThickness: 3,
+      align: 'center'
+    }).setOrigin(1, 1).setDepth(11);
+
+    this.hiScoreLabel = this.add.text(width / 2, height - 24, '0000000', {
+      fontFamily: '"Press Start 2P"',
+      fontSize: '14px',
+      color: '#FFFFFF',
+      stroke: '',
+      strokeThickness: 3,
+      align: 'center'
+    }).setOrigin(-0.1, 1).setDepth(11);
+
     this.timings = { fadeIn: 120, hold: 220, fadeOut: 80 };
 
     this.currentIndex = 0;
     this.showSlide(this.currentIndex);
 
-    
     this.input.once('pointerdown', () => this.scene.start('level1'));
     this.input.keyboard.once('keydown', () => this.scene.start('level1'));
   }
@@ -63,8 +91,11 @@ class MainMenu extends Phaser.Scene {
     this.slide.setTexture(key);
     fitInside(this.slide, this.scale.width, this.scale.height, this.scaleFactor);
     this.slide.setPosition(this.scale.width / 2, this.topY);
-    this.slide.setAlpha(0);
 
+    const titleY = this.topY + (this.slide.displayHeight / 2) + 8;
+    this.title.setPosition(this.scale.width / 2, titleY);
+
+    this.slide.setAlpha(0);
     this.tweens.add({
       targets: this.slide,
       alpha: 1,
