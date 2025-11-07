@@ -37,6 +37,25 @@ class MainMenu extends Phaser.Scene {
 
     // Texto 
     const titleY = this.topY + (this.slide.displayHeight / 2) + 8;
+
+    this.title = this.add.text(width / 2, titleY, '©1990', {
+      fontFamily: '"Press Start 2P"',
+      fontSize: '18px',          
+      color: '#FFFFFF',
+      stroke: '',
+      strokeThickness: 4,
+      align: 'center'
+    }).setOrigin(1, -1).setDepth(11);
+
+    this.title = this.add.text(width / 2, titleY, 'RCM', {
+      fontFamily: '"Press Start 2P"',
+      fontSize: '18px',          
+      color: '#6495ed',
+      stroke: '',
+      strokeThickness: 4,
+      align: 'center'
+    }).setOrigin(-0.5, -1).setDepth(11);
+
     this.title = this.add.text(width / 2, titleY, 'HWANG SHINWEI', {
       fontFamily: '"Press Start 2P"',
       fontSize: '18px',          
