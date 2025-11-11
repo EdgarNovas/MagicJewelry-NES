@@ -25,7 +25,7 @@ class Grid {
     drawGridLines() {
         const g = this.graphics;
         g.clear();
-        g.lineStyle(1, 0x555555, 0.5);
+        g.lineStyle(1, rgb(85, 85, 85), 0.5);
 
         for (let x = 0; x <= this.cols; x++) {
             g.moveTo(this.offsetX + x * this.cellSize, this.offsetY);
@@ -41,7 +41,7 @@ class Grid {
     }
 
     // Método para dibujar un bloque en una celda
-    setCell(x, y, color = 0xff0000) {
+    setCell(x, y, color = rgb(255, 0, 0)) {
         if (x < 0 || x >= this.cols || y < 0 || y >= this.rows) return;
 
         this.cells[y][x] = 1;
@@ -53,7 +53,7 @@ class Grid {
             this.cellSize,
             color
         );
-        rect.setStrokeStyle(1, 0x000000);
+        rect.setStrokeStyle(1, rgb(0, 0, 0));
     }
 
     clearCell(x, y) {
