@@ -16,7 +16,11 @@ var config = {
     width: gamePrefs.gameWidth/2,
     height: gamePrefs.gameHeight/2
   },
-  scene: [MainMenu, level1] 
+  scene: [MainMenu, level1],
+  
+  audio: {
+    disableWebAudio: true
+  }
 };
 
 var juego = new Phaser.Game(config);
