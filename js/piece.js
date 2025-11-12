@@ -50,4 +50,10 @@ class Piece {
         // mover hacia abajo
         for (const g of this.gems) g.y++;
     }
+
+    shiftPosition(){
+        const first = this.gems.shift();
+        this.gems.push(first)
+        this.scene.shiftSFX.play();
+    }
 }
