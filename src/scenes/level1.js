@@ -7,9 +7,12 @@ class level1 extends Phaser.Scene
 
      preload() {
         this.load.setPath('assets/sprites/static');
-        this.load.image('red', 'gem1.png');
-        this.load.image('green', 'gem2.png');
-        this.load.image('blue', 'gem3.png');
+        this.load.image('magenta', 'gem1.png');
+        this.load.image('yellow', 'gem2.png');
+        this.load.image('purple', 'gem3.png');
+        this.load.image('orange', 'gem4.png');
+        this.load.image('blue', 'gem5.png');
+        this.load.image('green', 'gem6.png');
 
         this.load.setPath('assets/sounds/effects');
         this.load.audio('shift', 'shiftPosition.wav')

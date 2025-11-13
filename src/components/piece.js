@@ -6,9 +6,11 @@ class Piece {
         this.y = -3; // empieza arriba del tablero
         this.gems = [];
 
-        const colors = Phaser.Utils.Array.Shuffle(['red', 'green', 'blue']);
+        const colors = ['magenta', 'yellow', 'purple',
+        'orange', 'blue', 'green'];
         for (let i = 0; i < 3; i++) {
-            this.gems.push({ x: this.x, y: this.y + i, color: colors[i] });
+            var randomColor = Phaser.Math.Between(0, colors.length);
+            this.gems.push({ x: this.x, y: this.y + i, color: colors[randomColor] });
         }
 
         this.sprites = this.gems.map(gem => {
