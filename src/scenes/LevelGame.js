@@ -4,7 +4,7 @@ class LevelGame extends Phaser.Scene {
     }
 
     preload() {
-        this.load.setPath('/assets/sprites/');
+        this.load.setPath('/assets/sprites/static');
         this.load.image('red', 'Red.png');
         this.load.image('green', 'Green.png');
         this.load.image('blue', 'Blue.png');

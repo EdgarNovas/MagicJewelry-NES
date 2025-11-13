@@ -5,7 +5,7 @@ class test1 extends Phaser.Scene{
     }
     preload(){
        this.cameras.main.setBackgroundColor("666");
-       this.load.setPath('assets/sprites');
+       this.load.setPath('assets/sprites/static');
        this.load.image('r', 'red.png');
        this.load.image('g', 'green.png');
        this.load.image('b', 'blue.png');

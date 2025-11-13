@@ -1,3 +1,5 @@
+// <reference path=".types.phaser.d.ts" />
+
 const gamePrefs = {
   gameWidth: 960,
   gameHeight: 540,

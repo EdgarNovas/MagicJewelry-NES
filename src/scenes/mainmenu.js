@@ -2,7 +2,7 @@ class MainMenu extends Phaser.Scene {
   constructor(){ super({ key:'MainMenu' }); }
 
   preload() {
-    this.load.setPath('assets/sprites');
+    this.load.setPath('assets/sprites/ui');
 
     this.letters = ['J','E','W','E','L','R','Y'];
     this.playOrder = [];

@@ -6,7 +6,7 @@ class level1 extends Phaser.Scene
     }
 
      preload() {
-        this.load.setPath('assets/sprites');
+        this.load.setPath('assets/sprites/static');
         this.load.image('red', 'gem1.png');
         this.load.image('green', 'gem2.png');
         this.load.image('blue', 'gem3.png');
