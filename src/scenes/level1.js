@@ -16,6 +16,7 @@ class level1 extends Phaser.Scene
 
         this.load.setPath('assets/sounds/effects');
         this.load.audio('shift', 'shiftPosition.wav')
+        this.load.audio('fall', 'fallToGround.wav')
     }
 
     create()
@@ -28,8 +29,8 @@ class level1 extends Phaser.Scene
         this.cursors = this.input.keyboard.createCursorKeys();
         this.keyX = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X);
         this.keyZ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
-
         this.shiftSFX = this.sound.add('shift');
+        this.fallToGroundSFX = this.sound.add('fall');
     }
 
 
@@ -41,6 +42,13 @@ class level1 extends Phaser.Scene
         if(Phaser.Input.Keyboard.JustDown(this.keyX)
         || Phaser.Input.Keyboard.JustDown(this.keyZ)){
             this.currentPiece.shiftPosition();
+        }
+        
+        if(this.cursors.right.isDown){
+            this.currentPiece.moveHotizontally(true);
+        }
+        if(this.cursors.left.isDown){
+            this.currentPiece.moveHotizontally(false);
         }
     }
     
