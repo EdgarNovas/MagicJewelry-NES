@@ -2,8 +2,8 @@ class Grid {
 
     constructor(scene, cols, rows, cellSize, offsetX = 0, offsetY = 0) {
         this.scene = scene;
-        this.cols = cols;
-        this.rows = rows;
+        this.cols = 6;
+        this.rows = 13;
         this.cellSize = cellSize;
         this.offsetX = offsetX;
         this.offsetY = offsetY;
