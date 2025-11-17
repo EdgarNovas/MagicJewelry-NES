@@ -19,6 +19,10 @@ class level1 extends Phaser.Scene {
 
     this.load.setPath('assets/sounds/effects');
     this.load.audio('shift', 'shiftPosition.wav');
+
+    this.load.setPath('assets/sounds/music');
+    this.load.audio('bgm', 'bg_music_1.mp3');
+
   }
 
   create() {
@@ -85,6 +89,19 @@ class level1 extends Phaser.Scene {
     this.keyZ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
 
     this.shiftSFX = this.sound.add('shift');
+
+
+    this.sound.pauseOnBlur = false;
+
+    const existing = this.sound.get('bgm');
+    if (existing) {
+    if (!existing.isPlaying) existing.play({ loop: true, volume: 0.5 });
+    this.bgm = existing;
+    } else {
+    this.bgm = this.sound.add('bgm', { loop: true, volume: 0.5 });
+    this.bgm.play();
+    }
+
   }
 
   update(time, delta) {
