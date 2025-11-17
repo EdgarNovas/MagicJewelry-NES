@@ -11,13 +11,16 @@ class level1 extends Phaser.Scene
         this.load.image('green', 'gem2.png');
         this.load.image('blue', 'gem3.png');
 
+        this.load.setPath('assets/sprites/backgrounds');
+        this.load.image('background1', 'level1.png');
+
         this.load.setPath('assets/sounds/effects');
         this.load.audio('shift', 'shiftPosition.wav')
     }
 
     create()
     {
-        this.grid = new Grid(this, 10, 12, 20, 140, 15);
+        this.grid = new Grid(this, 10, 12, 48, 140, 15);
         this.spawnNewPiece();
 
        

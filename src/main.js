@@ -1,22 +1,25 @@
 // <reference path=".types.phaser.d.ts" />
 
 const gamePrefs = {
-  gameWidth: 960,
-  gameHeight: 540,
+  baseGameWidth: 256,
+  baseGameHeight: 240,
+  gameScalingMultiplier: 3,
+  gameWidth: 768,
+  gameHeight: 720,
   GRAVITY: 0 // pon lo que necesites
 };
 
 var config = {
   type: Phaser.AUTO,
-  width: gamePrefs.gameWidth,
-  height: gamePrefs.gameHeight,
+  width: gamePrefs.baseGameWidth,
+  height: gamePrefs.baseGameHeight,
   render: { pixelArt: true },
   
   scale: {
-    mode: Phaser.Scale.FIT,
+    mode: Phaser.Scale.NONE,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: gamePrefs.gameWidth/2,
-    height: gamePrefs.gameHeight/2
+    width: gamePrefs.gameWidth,
+    height: gamePrefs.gameHeight
   },
   scene: [MainMenu, level1],
   
