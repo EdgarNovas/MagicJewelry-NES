@@ -14,7 +14,8 @@ class MainMenu extends Phaser.Scene {
   }
 
   create() {
-    const { width, height } = this.scale;
+    const width = gamePrefs.gameWidth;
+    const height = gamePrefs.gameHeight;
 
     this.resolved = {};
     Array.from(new Set(this.playOrder)).forEach(name => {
@@ -23,24 +24,24 @@ class MainMenu extends Phaser.Scene {
     });
 
     // -------- ajustes de tamaño y posición --------
-    this.scaleFactor = 0.45;              
-    this.topY = Math.round(height * 0.20); 
+    this.scaleFactor = 0.65;              
+    this.topY = Math.round(height * 0.1); 
     // ----------------------------------------------
 
     const firstKey = this.resolved[this.playOrder[0]];
     this.slide = this.add.image(width/2, this.topY, firstKey)
-                    .setOrigin(0.5, 0.5)
+                    .setOrigin(0.5, 0)
                     .setAlpha(0)
                     .setDepth(10);
 
     fitInside(this.slide, width, height, this.scaleFactor);
 
     // Texto 
-    const titleY = this.topY + (this.slide.displayHeight / 2) + 8;
+    const titleY = this.topY + (this.slide.displayHeight / 2) + 200;
 
     this.title = this.add.text(width / 2, titleY, '©1990', {
       fontFamily: '"Press Start 2P"',
-      fontSize: '18px',          
+      fontSize: '25px',          
       color: '#FFFFFF',
       stroke: '',
       strokeThickness: 4,
@@ -49,7 +50,7 @@ class MainMenu extends Phaser.Scene {
 
     this.title = this.add.text(width / 2, titleY, 'RCM', {
       fontFamily: '"Press Start 2P"',
-      fontSize: '18px',          
+      fontSize: '25px',          
       color: '#6495ed',
       stroke: '',
       strokeThickness: 4,
@@ -58,26 +59,26 @@ class MainMenu extends Phaser.Scene {
 
     this.title = this.add.text(width / 2, titleY, 'HWANG SHINWEI', {
       fontFamily: '"Press Start 2P"',
-      fontSize: '18px',          
+      fontSize: '25px',          
       color: '#edc001',
       stroke: '',
       strokeThickness: 4,
       align: 'center'
-    }).setOrigin(0.5, -3).setDepth(11);
+    }).setOrigin(0.5, -10).setDepth(11);
     if (this.title.setLetterSpacing) this.title.setLetterSpacing(-1);
 
-    this.hiScoreLabel = this.add.text(width / 2, height - 24, 'HI SCORE', {
+    this.hiScoreLabel = this.add.text(width / 2, height - 65, 'HI SCORE', {
       fontFamily: '"Press Start 2P"',
-      fontSize: '14px',
+      fontSize: '25px',
       color: '#6495ed',
       stroke: '',
       strokeThickness: 3,
       align: 'center'
     }).setOrigin(1, 1).setDepth(11);
 
-    this.hiScoreLabel = this.add.text(width / 2, height - 24, '0000000', {
+    this.hiScoreLabel = this.add.text(width / 2, height - 65, '0000000', {
       fontFamily: '"Press Start 2P"',
-      fontSize: '14px',
+      fontSize: '25px',
       color: '#FFFFFF',
       stroke: '',
       strokeThickness: 3,
@@ -111,7 +112,7 @@ class MainMenu extends Phaser.Scene {
     fitInside(this.slide, this.scale.width, this.scale.height, this.scaleFactor);
     this.slide.setPosition(this.scale.width / 2, this.topY);
 
-    const titleY = this.topY + (this.slide.displayHeight / 2) + 8;
+    const titleY = this.topY + 160;
     this.title.setPosition(this.scale.width / 2, titleY);
 
     this.slide.setAlpha(0);
