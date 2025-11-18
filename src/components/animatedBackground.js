@@ -5,7 +5,7 @@ class AnimatedBackground {
     this.area = area;
     this.cfg = Object.assign({
       starKey: 'stars',
-      starFrames: [0],
+      starFrames: [0, 1, 2, 3],
       starCount: 60,
       speedMin: 6,      
       speedMax: 10,     

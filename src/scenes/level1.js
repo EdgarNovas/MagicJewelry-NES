@@ -12,7 +12,7 @@ class level1 extends Phaser.Scene {
     this.load.image('background1', 'bg1.png');
 
     this.load.setPath('assets/sprites/spritesheets');
-    this.load.spritesheet('stars', 'stars.png', { frameWidth: 8, frameHeight: 8 });
+   this.load.spritesheet('stars', 'stars.png', { frameWidth: 4, frameHeight: 3 });
 
     this.load.setPath('assets/sprites/static');
     this.load.image('moon', 'moon.png');
