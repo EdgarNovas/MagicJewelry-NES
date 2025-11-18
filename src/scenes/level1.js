@@ -10,11 +10,10 @@ class level1 extends Phaser.Scene {
         this.load.image('orange', 'gem4.png');
         this.load.image('blue', 'gem5.png');
         this.load.image('green', 'gem6.png');
-
         this.load.setPath('assets/sounds/effects');
-        this.load.audio('shift', 'shiftPosition.wav')
-        this.load.audio('fall', 'fallToGround.wav')
-    }
+        this.load.audio('shift', 'shiftPosition.wav');
+        this.load.audio('fall', 'fallToGround.wav');
+    
     this.load.setPath('assets/sprites/backgrounds');
     this.load.image('background1', 'bg1.png');
 
@@ -27,27 +26,18 @@ class level1 extends Phaser.Scene {
         this.cursors = this.input.keyboard.createCursorKeys();
         this.keyX = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X);
         this.keyZ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
-        this.shiftSFX = this.sound.add('shift');
-        this.fallToGroundSFX = this.sound.add('fall');
+       // Problem
+        //this.shiftSFX = this.sound.add('shift');
+        //this.fallToGroundSFX = this.sound.add('fall');
     }
 
-  }
+  
 
   create() {
     const GW = this.scale.width;
     const GH = this.scale.height;
 
-        if(Phaser.Input.Keyboard.JustDown(this.keyX)
-        || Phaser.Input.Keyboard.JustDown(this.keyZ)){
-            this.currentPiece.shiftPosition();
-        }
-        
-        if(this.cursors.right.isDown){
-            this.currentPiece.moveHotizontally(true);
-        }
-        if(this.cursors.left.isDown){
-            this.currentPiece.moveHotizontally(false);
-        }
+      
     const baseW = 256, baseH = 240;
     const ZOOM = 3;
     const PF = { left: 39, top: 14, width: 124, height: 212 };
@@ -111,15 +101,18 @@ class level1 extends Phaser.Scene {
 
 
     this.sound.pauseOnBlur = false;
-
+    // Problem
+    /*
     const existing = this.sound.get('bgm');
     if (existing) {
     if (!existing.isPlaying) existing.play({ loop: true, volume: 0.5 });
     this.bgm = existing;
+    
     } else {
-    this.bgm = this.sound.add('bgm', { loop: true, volume: 0.5 });
+    //this.bgm = this.sound.add('bgm', { loop: true, volume: 0.5 });
     this.bgm.play();
     }
+    */
 
   }
 
@@ -130,9 +123,19 @@ class level1 extends Phaser.Scene {
       this.currentPiece.shiftPosition();
       this.shiftSFX?.play({ volume: 0.7 });
     }
+    // Control de movimiento lateral (mientras se mantiene pulsado)
+      if(this.cursors.right.isDown){
+          this.currentPiece.moveHotizontally(true);
+      }
+      if(this.cursors.left.isDown){
+          this.currentPiece.moveHotizontally(false);
+      }
   }
 
   spawnNewPiece() {
+    if (this.currentPiece) {
+        this.currentPiece.destroySprites(); 
+    }
     this.currentPiece = new Piece(this, this.grid, 3);
   }
 }
