@@ -35,22 +35,27 @@ class Piece {
             this.moveDown();
         }
 
-        // actualizar posiciones visuales
-        for (let i = 0; i < this.gems.length; i++) {
-            const g = this.gems[i];
-            const posX = this.grid.offsetX + g.x * this.grid.cellSize + this.grid.cellSize / 2;
-            const posY = this.grid.offsetY + g.y * this.grid.cellSize + this.grid.cellSize / 2;
-            this.sprites[i].setPosition(posX, posY);
-        }
-    } 
+    // actualizar posiciones visuales + colores
+    for (let i = 0; i < this.gems.length; i++) {
+        const g = this.gems[i];
+
+        // 🔥 IMPORTANTE - cambia textura según color actual
+        this.sprites[i].setTexture(g.color);
+
+        const posX = this.grid.offsetX + g.x * this.grid.cellSize + this.grid.cellSize / 2;
+        const posY = this.grid.offsetY + g.y * this.grid.cellSize + this.grid.cellSize / 2;
+        this.sprites[i].setPosition(posX, posY);
+    }
+}
     
     moveDown() {
         // comprobar colisión
         for (const g of this.gems) {
-            if (this.grid.isOccupied(g.x, g.y + 1) || g.y + 1 >= this.grid.rows) {
-                // se detiene
+            if (g.y + 1 >= this.grid.rows || this.grid.isOccupied(g.x, g.y + 1)) {
                 this.scene.fallToGroundSFX.play();
                 this.grid.mergePiece(this);
+                this.grid.resolveMatches();
+                this.grid.redraw();
                 this.scene.spawnNewPiece();
                 return;
             }
@@ -91,4 +96,5 @@ class Piece {
         this.gems.push(first)
         this.scene.shiftSFX.play();
     }
+}
 }
