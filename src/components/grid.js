@@ -142,19 +142,20 @@ class Grid {
     }
     
     resolveMatches() {
-    let totalCleared = 0;
+        let totalCleared = 0;
 
-    while (true) {
-        const matches = this.findMatches();
-        if (matches.length === 0) break;
+        while (true) {
+            const matches = this.findMatches();
+            if (matches.length === 0) break;
 
-        this.clearMatches(matches);
-        this.applyGravity();
+            this.clearMatches(matches);
+            this.applyGravity();
 
-        totalCleared += matches.length;
-    }
 
-    return totalCleared;
+            totalCleared += matches.length;
+        }
+
+        return totalCleared;
     }
     
     redraw() {

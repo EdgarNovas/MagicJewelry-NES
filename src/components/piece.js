@@ -5,6 +5,7 @@ class Piece {
         this.x = x;
         this.y = -3; // empieza arriba del tablero
         this.gems = [];
+        this.alive = true;
 
         const colors = ['magenta', 'yellow', 'purple',
         'orange', 'blue', 'green'];
@@ -34,12 +35,11 @@ class Piece {
             this.dropTimer = 0;
             this.moveDown();
         }
-
+        
+        if(!this.alive) return;
     // actualizar posiciones visuales + colores
     for (let i = 0; i < this.gems.length; i++) {
         const g = this.gems[i];
-
-        // 🔥 IMPORTANTE - cambia textura según color actual
         this.sprites[i].setTexture(g.color);
 
         const posX = this.grid.offsetX + g.x * this.grid.cellSize + this.grid.cellSize / 2;
@@ -52,11 +52,13 @@ class Piece {
         // comprobar colisión
         for (const g of this.gems) {
             if (g.y + 1 >= this.grid.rows || this.grid.isOccupied(g.x, g.y + 1)) {
-                this.scene.fallToGroundSFX.play();
+                //this.scene.fallToGroundSFX.play();// Problem
+                
                 this.grid.mergePiece(this);
                 this.grid.resolveMatches();
                 this.grid.redraw();
                 this.scene.spawnNewPiece();
+                this.alive = false;
                 return;
             }
 
@@ -65,6 +67,12 @@ class Piece {
         // mover hacia abajo
         for (const g of this.gems) g.y++;
     }
+    
+    destroySprites() {
+        this.sprites.forEach(sprite => sprite.destroy());
+        this.sprites = [];
+    }
+
 
     moveHotizontally(right) {
         if(this.moveTimer < this.moveInterval) return;
@@ -91,10 +99,14 @@ class Piece {
         }
     }
 
-    shiftPosition(){
-        const first = this.gems.shift();
-        this.gems.push(first)
-        this.scene.shiftSFX.play();
-    }
+   shiftPosition() {
+    // Rota solo los colores
+    const firstColor = this.gems[0].color;
+    this.gems[0].color = this.gems[1].color;
+    this.gems[1].color = this.gems[2].color;
+    this.gems[2].color = firstColor;
+
+    this.scene.shiftSFX.play();
 }
+
 }
