@@ -6,9 +6,11 @@ class Piece {
         this.y = -3; // empieza arriba del tablero
         this.gems = [];
 
-        const colors = Phaser.Utils.Array.Shuffle(['red', 'green', 'blue']);
+        const colors = ['magenta', 'yellow', 'purple',
+        'orange', 'blue', 'green'];
         for (let i = 0; i < 3; i++) {
-            this.gems.push({ x: this.x, y: this.y + i, color: colors[i] });
+            var randomColor = Phaser.Math.Between(0, colors.length - 1);
+            this.gems.push({ x: this.x, y: this.y + i, color: colors[randomColor] });
         }
 
         this.sprites = this.gems.map(gem => {
@@ -19,10 +21,15 @@ class Piece {
 
         this.dropTimer = 0;
         this.dropInterval = 500; // ms
+
+        this.moveTimer = 0;
+        this.moveInterval = 100;
     }
 
     update(time, delta) {
         this.dropTimer += delta;
+        this.moveTimer += delta;
+
         if (this.dropTimer > this.dropInterval) {
             this.dropTimer = 0;
             this.moveDown();
@@ -42,13 +49,41 @@ class Piece {
         for (const g of this.gems) {
             if (this.grid.isOccupied(g.x, g.y + 1) || g.y + 1 >= this.grid.rows) {
                 // se detiene
+                this.scene.fallToGroundSFX.play();
                 this.grid.mergePiece(this);
                 this.scene.spawnNewPiece();
                 return;
             }
+
+            
         }
         // mover hacia abajo
         for (const g of this.gems) g.y++;
+    }
+
+    moveHotizontally(right) {
+        if(this.moveTimer < this.moveInterval) return;
+        this.moveTimer = 0;
+
+        // comprobar colisión
+        for (const g of this.gems) {
+            if(right){
+                if (this.grid.isOccupied(g.x + 1, g.y) || g.x + 1 >= this.grid.cols) {
+                    
+                    return;
+                }
+            }
+            else{
+                if (this.grid.isOccupied(g.x - 1, g.y) || g.x - 1 < 0) {
+                    // se detiene
+                    return;
+                }
+            }
+        }
+        for(const g of this.gems){
+            if(right) g.x++;
+            else g.x--;
+        }
     }
 
     shiftPosition(){

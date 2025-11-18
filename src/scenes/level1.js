@@ -2,12 +2,19 @@
 class level1 extends Phaser.Scene {
   constructor() { super({ key: 'level1' }); }
 
-  preload() {
-    this.load.setPath('assets/sprites/static');
-    this.load.image('red', 'gem1.png');
-    this.load.image('green', 'gem2.png');
-    this.load.image('blue', 'gem3.png');
+     preload() {
+        this.load.setPath('assets/sprites/static');
+        this.load.image('magenta', 'gem1.png');
+        this.load.image('yellow', 'gem2.png');
+        this.load.image('purple', 'gem3.png');
+        this.load.image('orange', 'gem4.png');
+        this.load.image('blue', 'gem5.png');
+        this.load.image('green', 'gem6.png');
 
+        this.load.setPath('assets/sounds/effects');
+        this.load.audio('shift', 'shiftPosition.wav')
+        this.load.audio('fall', 'fallToGround.wav')
+    }
     this.load.setPath('assets/sprites/backgrounds');
     this.load.image('background1', 'bg1.png');
 
@@ -17,11 +24,12 @@ class level1 extends Phaser.Scene {
     this.load.setPath('assets/sprites/static');
     this.load.image('moon', 'moon.png');
 
-    this.load.setPath('assets/sounds/effects');
-    this.load.audio('shift', 'shiftPosition.wav');
-
-    this.load.setPath('assets/sounds/music');
-    this.load.audio('bgm', 'bg_music_1.mp3');
+        this.cursors = this.input.keyboard.createCursorKeys();
+        this.keyX = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X);
+        this.keyZ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
+        this.shiftSFX = this.sound.add('shift');
+        this.fallToGroundSFX = this.sound.add('fall');
+    }
 
   }
 
@@ -29,6 +37,17 @@ class level1 extends Phaser.Scene {
     const GW = this.scale.width;
     const GH = this.scale.height;
 
+        if(Phaser.Input.Keyboard.JustDown(this.keyX)
+        || Phaser.Input.Keyboard.JustDown(this.keyZ)){
+            this.currentPiece.shiftPosition();
+        }
+        
+        if(this.cursors.right.isDown){
+            this.currentPiece.moveHotizontally(true);
+        }
+        if(this.cursors.left.isDown){
+            this.currentPiece.moveHotizontally(false);
+        }
     const baseW = 256, baseH = 240;
     const ZOOM = 3;
     const PF = { left: 39, top: 14, width: 124, height: 212 };
