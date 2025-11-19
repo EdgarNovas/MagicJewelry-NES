@@ -21,7 +21,10 @@ class Piece {
         });
 
         this.dropTimer = 0;
-        this.dropInterval = 500; // ms
+        this.automaticDropInterval = 1000; // ms
+        this.fastDropInterval = 25; // ms
+        this.dropInterval = this.automaticDropInterval;
+
 
         this.moveTimer = 0;
         this.moveInterval = 100;
@@ -97,6 +100,14 @@ class Piece {
             if(right) g.x++;
             else g.x--;
         }
+    }
+
+    accelerateMovement(accelerate)
+    {
+        if (accelerate)
+            this.dropInterval = this.fastDropInterval;
+        else
+            this.dropInterval = this.automaticDropInterval;
     }
 
    shiftPosition() {

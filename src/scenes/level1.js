@@ -97,6 +97,15 @@ class level1 extends Phaser.Scene {
         this.fallToGroundSFX = this.sound.add('fall');
 
         this.sound.pauseOnBlur = false;
+
+        this.cursors.down.on('down', () => {
+            this.currentPiece.accelerateMovement(true);
+        });
+
+        this.cursors.down.on('up', () => {
+            this.currentPiece.accelerateMovement(false);
+        });
+
         // Problem
         /*
         const existing = this.sound.get('bgm');
