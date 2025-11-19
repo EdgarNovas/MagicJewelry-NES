@@ -10,6 +10,7 @@ class level1 extends Phaser.Scene {
         this.load.image('orange', 'gem4.png');
         this.load.image('blue', 'gem5.png');
         this.load.image('green', 'gem6.png');
+        this.load.image('cross', 'xblock1.png');
 
         this.load.setPath('assets/sounds/effects');
         this.load.audio('shift', 'shiftPosition.wav');
@@ -106,6 +107,18 @@ class level1 extends Phaser.Scene {
             this.currentPiece.accelerateMovement(false);
         });
 
+        this.gameOver = false;
+
+        this.input.keyboard.on('keydown-ENTER', () => {
+          if (this.gameOver)
+            this.scene.start('MainMenu'); 
+        });
+
+        this.gameOverAnimRow = ROWS - 1;
+        this.gameOverAnimCol = COLS - 1;
+        this.gameOverAnimTime = 40;
+        this.gameOverAnimTimer = 0;
+
         // Problem
         /*
         const existing = this.sound.get('bgm');
@@ -123,18 +136,42 @@ class level1 extends Phaser.Scene {
 
   update(time, delta) {
     this.abg?.update(delta);
-    if (this.currentPiece) this.currentPiece.update(time, delta);
-    if (Phaser.Input.Keyboard.JustDown(this.keyX) || Phaser.Input.Keyboard.JustDown(this.keyZ)) {
-      this.currentPiece.shiftPosition();
-      this.shiftSFX?.play({ volume: 0.7 });
+
+    if (this.gameOver)
+    {
+      this.gameOverAnimTimer += delta;
+      if (this.gameOverAnimTimer >= this.gameOverAnimTime)
+      {
+        this.gameOverAnimTimer = 0;
+        this.grid.setCell(this.gameOverAnimCol, this.gameOverAnimRow, 'cross');
+        this.grid.redraw();
+        
+        this.gameOverAnimCol--;
+        if (this.gameOverAnimCol < 0)
+        {          
+          this.gameOverAnimCol = this.grid.cols - 1;
+          this.gameOverAnimRow--;
+        }
+      }
+        
     }
-    // Control de movimiento lateral (mientras se mantiene pulsado)
-      if(this.cursors.right.isDown){
-          this.currentPiece.moveHotizontally(true);
+    else
+    {
+      if (this.currentPiece) this.currentPiece.update(time, delta);
+      if (Phaser.Input.Keyboard.JustDown(this.keyX) || Phaser.Input.Keyboard.JustDown(this.keyZ)) {
+        this.currentPiece.shiftPosition();
+        this.shiftSFX?.play({ volume: 0.7 });
       }
-      if(this.cursors.left.isDown){
-          this.currentPiece.moveHotizontally(false);
-      }
+      // Control de movimiento lateral (mientras se mantiene pulsado)
+        if(this.cursors.right.isDown){
+            this.currentPiece.moveHotizontally(true);
+        }
+        if(this.cursors.left.isDown){
+            this.currentPiece.moveHotizontally(false);
+        }
+    }
+
+    
   }
 
   spawnNewPiece() {

@@ -8,9 +8,9 @@ class Piece {
         this.alive = true;
 
         const colors = ['magenta', 'yellow', 'purple',
-        'orange', 'blue', 'green'];
+        'orange', 'blue', 'green', 'cross'];
         for (let i = 0; i < 3; i++) {
-            var randomColor = Phaser.Math.Between(0, colors.length - 1);
+            var randomColor = Phaser.Math.Between(0, colors.length - 2);
             this.gems.push({ x: this.x, y: this.y + i, color: colors[randomColor] });
         }
 
@@ -52,21 +52,31 @@ class Piece {
 }
     
     moveDown() {
+        if (!this.alive) return;
+
         // comprobar colisión
-        for (const g of this.gems) {
-            if (g.y + 1 >= this.grid.rows || this.grid.isOccupied(g.x, g.y + 1)) {
-                this.scene.fallToGroundSFX.play(); // Problem
-                
-                this.grid.mergePiece(this);
-                this.grid.resolveMatches();
-                this.grid.redraw();
-                this.scene.spawnNewPiece();
-                this.alive = false;
-                return;
+        const g = this.gems[2];
+        if (g.y + 1 >= this.grid.rows || this.grid.isOccupied(g.x, g.y + 1)) {
+            this.scene.fallToGroundSFX.play(); // Problem
+            
+            this.grid.mergePiece(this);
+            this.grid.resolveMatches();
+            this.grid.redraw();
+            this.alive = false;
+
+            for (const g of this.gems) {
+                if (g.y == 0)
+                {
+                    this.scene.gameOver = true;
+                    return;
+                }
             }
 
-            
-        }
+            this.scene.spawnNewPiece();
+
+            return;
+        }         
+
         // mover hacia abajo
         for (const g of this.gems) g.y++;
     }
@@ -78,7 +88,7 @@ class Piece {
 
 
     moveHotizontally(right) {
-        if(this.moveTimer < this.moveInterval) return;
+        if(this.moveTimer < this.moveInterval || !this.alive) return;
         this.moveTimer = 0;
 
         // comprobar colisión
