@@ -15,7 +15,8 @@ class level1 extends Phaser.Scene {
         this.load.setPath('assets/sounds/effects');
         this.load.audio('shift', 'shiftPosition.wav');
         this.load.audio('fall', 'fallToGround.wav');
-    
+        this.load.audio('gameOver', 'gameOverSweep.wav');
+
         this.load.setPath('assets/sprites/backgrounds');
         this.load.image('background1', 'bg1.png');
 
@@ -96,6 +97,7 @@ class level1 extends Phaser.Scene {
 
         this.shiftSFX = this.sound.add('shift');
         this.fallToGroundSFX = this.sound.add('fall');
+        this.gameOverSweepSFX = this.sound.add('gameOver');
 
         this.sound.pauseOnBlur = false;
 
@@ -147,8 +149,9 @@ class level1 extends Phaser.Scene {
         this.grid.redraw();
         
         this.gameOverAnimCol--;
-        if (this.gameOverAnimCol < 0)
+        if (this.gameOverAnimCol < 0 && this.gameOverAnimRow > 0)
         {          
+          this.gameOverSweepSFX.play();
           this.gameOverAnimCol = this.grid.cols - 1;
           this.gameOverAnimRow--;
         }
