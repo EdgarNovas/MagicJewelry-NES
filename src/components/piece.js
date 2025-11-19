@@ -52,7 +52,7 @@ class Piece {
         // comprobar colisión
         for (const g of this.gems) {
             if (g.y + 1 >= this.grid.rows || this.grid.isOccupied(g.x, g.y + 1)) {
-                //this.scene.fallToGroundSFX.play();// Problem
+                this.scene.fallToGroundSFX.play(); // Problem
                 
                 this.grid.mergePiece(this);
                 this.grid.resolveMatches();
