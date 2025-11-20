@@ -10,11 +10,13 @@ class level1 extends Phaser.Scene {
         this.load.image('orange', 'gem4.png');
         this.load.image('blue', 'gem5.png');
         this.load.image('green', 'gem6.png');
+        this.load.image('cross', 'xblock1.png');
 
         this.load.setPath('assets/sounds/effects');
         this.load.audio('shift', 'shiftPosition.wav');
         this.load.audio('fall', 'fallToGround.wav');
-    
+        this.load.audio('gameOver', 'gameOverSweep.wav');
+
         this.load.setPath('assets/sprites/backgrounds');
         this.load.image('background1', 'bg1.png');
 
@@ -23,6 +25,10 @@ class level1 extends Phaser.Scene {
 
         this.load.setPath('assets/sprites/static');
         this.load.image('moon', 'moon.png');
+
+        this.load.setPath('assets/sprites/ui');
+        this.load.spritesheet('gameoverText', 'gameover_text_1.png',
+        {frameWidth:80,frameHeight:8});
 
         this.cursors = this.input.keyboard.createCursorKeys();
        
@@ -95,6 +101,7 @@ class level1 extends Phaser.Scene {
 
         this.shiftSFX = this.sound.add('shift');
         this.fallToGroundSFX = this.sound.add('fall');
+        this.gameOverSweepSFX = this.sound.add('gameOver');
 
         this.sound.pauseOnBlur = false;
 
@@ -106,6 +113,30 @@ class level1 extends Phaser.Scene {
             this.currentPiece.accelerateMovement(false);
         });
 
+        this.gameOver = false;
+
+        this.input.keyboard.on('keydown-ENTER', () => {
+          if (this.gameOver)
+            this.scene.start('MainMenu'); 
+        });
+
+        
+
+        this.gameOverAnimRow = ROWS - 1;
+        this.gameOverAnimCol = COLS - 1;
+        this.gameOverAnimTime = 40;
+        this.gameOverAnimTimer = 0;
+
+        this.anims.create(
+        {
+            key: 'gameoverTextFlash',
+            frames:this.anims.generateFrameNumbers('gameoverText', 
+            {start:0, end: 1}),
+            frameRate: 1.5,
+            repeat: -1
+        });
+
+        
         // Problem
         /*
         const existing = this.sound.get('bgm');
@@ -123,18 +154,43 @@ class level1 extends Phaser.Scene {
 
   update(time, delta) {
     this.abg?.update(delta);
-    if (this.currentPiece) this.currentPiece.update(time, delta);
-    if (Phaser.Input.Keyboard.JustDown(this.keyX) || Phaser.Input.Keyboard.JustDown(this.keyZ)) {
-      this.currentPiece.shiftPosition();
-      this.shiftSFX?.play({ volume: 0.7 });
+
+    if (this.gameOver)
+    {
+      this.gameOverAnimTimer += delta;
+      if (this.gameOverAnimTimer >= this.gameOverAnimTime)
+      {
+        this.gameOverAnimTimer = 0;
+        this.grid.setCell(this.gameOverAnimCol, this.gameOverAnimRow, 'cross');
+        this.grid.redraw();
+        
+        this.gameOverAnimCol--;
+        if (this.gameOverAnimCol < 0 && this.gameOverAnimRow > 0)
+        {          
+          this.gameOverSweepSFX.play();
+          this.gameOverAnimCol = this.grid.cols - 1;
+          this.gameOverAnimRow--;
+        }
+      }
+        
     }
-    // Control de movimiento lateral (mientras se mantiene pulsado)
-      if(this.cursors.right.isDown){
-          this.currentPiece.moveHotizontally(true);
+    else
+    {
+      if (this.currentPiece) this.currentPiece.update(time, delta);
+      if (Phaser.Input.Keyboard.JustDown(this.keyX) || Phaser.Input.Keyboard.JustDown(this.keyZ)) {
+        this.currentPiece.shiftPosition();
+        this.shiftSFX?.play({ volume: 0.7 });
       }
-      if(this.cursors.left.isDown){
-          this.currentPiece.moveHotizontally(false);
-      }
+      // Control de movimiento lateral (mientras se mantiene pulsado)
+        if(this.cursors.right.isDown){
+            this.currentPiece.moveHotizontally(true);
+        }
+        if(this.cursors.left.isDown){
+            this.currentPiece.moveHotizontally(false);
+        }
+    }
+
+    
   }
 
   spawnNewPiece() {
@@ -142,6 +198,19 @@ class level1 extends Phaser.Scene {
         this.currentPiece.destroySprites(); 
     }
     this.currentPiece = new Piece(this, this.grid, 3);
+  }
+
+  startGameover()
+  {
+    const GAMEOVER_TEXT_X = 62 * gamePrefs.gameScalingMultiplier;
+    const GAMEOVER_TEXT_Y = 57 * gamePrefs.gameScalingMultiplier;
+    this.gameoverText = this.add.sprite(GAMEOVER_TEXT_X, GAMEOVER_TEXT_Y, 'gameoverText').
+      setScale(3).
+      setOrigin(0).
+      setDepth(10);
+    this.gameoverText.anims.play('gameoverTextFlash');
+
+    this.gameOver = true;
   }
 }
 
