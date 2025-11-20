@@ -26,6 +26,10 @@ class level1 extends Phaser.Scene {
         this.load.setPath('assets/sprites/static');
         this.load.image('moon', 'moon.png');
 
+        this.load.setPath('assets/sprites/ui');
+        this.load.spritesheet('gameoverText', 'gameover_text_1.png',
+        {frameWidth:80,frameHeight:8});
+
         this.cursors = this.input.keyboard.createCursorKeys();
        
     }
@@ -116,11 +120,23 @@ class level1 extends Phaser.Scene {
             this.scene.start('MainMenu'); 
         });
 
+        
+
         this.gameOverAnimRow = ROWS - 1;
         this.gameOverAnimCol = COLS - 1;
         this.gameOverAnimTime = 40;
         this.gameOverAnimTimer = 0;
 
+        this.anims.create(
+        {
+            key: 'gameoverTextFlash',
+            frames:this.anims.generateFrameNumbers('gameoverText', 
+            {start:0, end: 1}),
+            frameRate: 1.5,
+            repeat: -1
+        });
+
+        
         // Problem
         /*
         const existing = this.sound.get('bgm');
@@ -182,6 +198,19 @@ class level1 extends Phaser.Scene {
         this.currentPiece.destroySprites(); 
     }
     this.currentPiece = new Piece(this, this.grid, 3);
+  }
+
+  startGameover()
+  {
+    const GAMEOVER_TEXT_X = 62 * gamePrefs.gameScalingMultiplier;
+    const GAMEOVER_TEXT_Y = 57 * gamePrefs.gameScalingMultiplier;
+    this.gameoverText = this.add.sprite(GAMEOVER_TEXT_X, GAMEOVER_TEXT_Y, 'gameoverText').
+      setScale(3).
+      setOrigin(0).
+      setDepth(10);
+    this.gameoverText.anims.play('gameoverTextFlash');
+
+    this.gameOver = true;
   }
 }
 

@@ -67,7 +67,7 @@ class Piece {
             for (const g of this.gems) {
                 if (g.y == 0)
                 {
-                    this.scene.gameOver = true;
+                    this.scene.startGameover();
                     return;
                 }
             }
