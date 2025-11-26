@@ -2,8 +2,8 @@ class Grid {
 
    constructor(scene, cols, rows, cellSize, offsetX = 0, offsetY = 0) {
         this.scene = scene;
-        this.cols = cols;     // <---- CORREGIDO
-        this.rows = rows;     // <---- CORREGIDO
+        this.cols = cols;     
+        this.rows = rows;     
         this.cellSize = cellSize;
         this.offsetX = offsetX;
         this.offsetY = offsetY;
@@ -19,6 +19,7 @@ class Grid {
         this.graphics = scene.add.graphics();
         this.drawGridLines();
     }
+
     drawGridLines() {
         const g = this.graphics;
         g.clear();
@@ -40,7 +41,7 @@ class Grid {
     // Método para dibujar un bloque en una celda
     setCell(x, y, color) {
         if (x < 0 || x >= this.cols || y < 0 || y >= this.rows) return;
-        this.cells[y][x] = color;  // <---- CORREGIDO
+        this.cells[y][x] = color;
     }
 
     clearCell(x, y) {
@@ -51,6 +52,7 @@ class Grid {
     isOccupied(x, y) {
         if (y < 0) return false; // arriba del tablero NO está ocupado
         if (y >= this.rows) return true; // fuera por abajo sí está ocupado (suelo)
+        if (x < 0 || x >= this.cols) return true; // paredes laterales
         return this.cells[y][x] !== null;
     }
     
@@ -63,76 +65,119 @@ class Grid {
     }
     
     findMatches() {
-    const matches = [];
+        const matches = [];
 
-    // Horizontal
-    for (let y = 0; y < this.rows; y++) {
-        let streak = 1;
-        for (let x = 1; x < this.cols; x++) {
-            const prev = this.cells[y][x-1];
-            const curr = this.cells[y][x];
+        // Horizontal
+        for (let y = 0; y < this.rows; y++) {
+            let streak = 1;
+            for (let x = 1; x < this.cols; x++) {
+                const prev = this.cells[y][x-1];
+                const curr = this.cells[y][x];
 
-            if (curr && curr === prev) {
-                streak++;
-            } else {
-                if (streak >= 3) {
-                    for (let k = 0; k < streak; k++) {
-                        matches.push({x: x-1-k, y});
+                if (curr && curr === prev) {
+                    streak++;
+                } else {
+                    if (streak >= 3) {
+                        for (let k = 0; k < streak; k++) {
+                            matches.push({x: x-1-k, y});
+                        }
                     }
+                    streak = 1;
                 }
-                streak = 1;
+            }
+            if (streak >= 3) {
+                for (let k = 0; k < streak; k++) {
+                    matches.push({x: this.cols-1-k, y});
+                }
             }
         }
 
-        if (streak >= 3) {
-            for (let k = 0; k < streak; k++) {
-                matches.push({x: this.cols-1-k, y});
-            }
-        }
-    }
+        // Vertical
+        for (let x = 0; x < this.cols; x++) {
+            let streak = 1;
+            for (let y = 1; y < this.rows; y++) {
+                const prev = this.cells[y-1][x];
+                const curr = this.cells[y][x];
 
-    // Vertical
-    for (let x = 0; x < this.cols; x++) {
-        let streak = 1;
-        for (let y = 1; y < this.rows; y++) {
-            const prev = this.cells[y-1][x];
-            const curr = this.cells[y][x];
-
-            if (curr && curr === prev) {
-                streak++;
-            } else {
-                if (streak >= 3) {
-                    for (let k = 0; k < streak; k++) {
-                        matches.push({x, y: y-1-k});
+                if (curr && curr === prev) {
+                    streak++;
+                } else {
+                    if (streak >= 3) {
+                        for (let k = 0; k < streak; k++) {
+                            matches.push({x, y: y-1-k});
+                        }
                     }
+                    streak = 1;
                 }
-                streak = 1;
+            }
+            if (streak >= 3) {
+                for (let k = 0; k < streak; k++) {
+                    matches.push({x, y: this.rows-1-k});
+                }
             }
         }
 
-        if (streak >= 3) {
-            for (let k = 0; k < streak; k++) {
-                matches.push({x, y: this.rows-1-k});
+        // Diagonal Descendente - de Izquierda a Derecha
+        for (let y = 0; y < this.rows - 2; y++) {
+            for (let x = 0; x < this.cols - 2; x++) {
+                const c1 = this.cells[y][x];
+                const c2 = this.cells[y+1][x+1];
+                const c3 = this.cells[y+2][x+2];
+
+                if (c1 && c1 === c2 && c2 === c3) {
+                    matches.push({x: x, y: y});
+                    matches.push({x: x+1, y: y+1});
+                    matches.push({x: x+2, y: y+2});
+                }
             }
         }
-    }
 
-    return matches;
+        // Diagonal Ascendente - de Derecha a Izquierda
+        for (let y = 0; y < this.rows - 2; y++) {
+            for (let x = 2; x < this.cols; x++) {
+                const c1 = this.cells[y][x];
+                const c2 = this.cells[y+1][x-1];
+                const c3 = this.cells[y+2][x-2];
+
+                if (c1 && c1 === c2 && c2 === c3) {
+                    matches.push({x: x, y: y});
+                    matches.push({x: x-1, y: y+1});
+                    matches.push({x: x-2, y: y+2});
+                }
+            }
+        }
+
+        // Filtro para duplicados
+        // Como las diagonales que pueden solaparse con horizontales o con ellas mismas
+        const uniqueMatches = [];
+        const seen = new Set();
+
+        for (const m of matches) {
+            const key = `${m.x},${m.y}`;
+            if (!seen.has(key)) {
+                seen.add(key);
+                uniqueMatches.push(m);
+            }
+        }
+
+        return uniqueMatches;
     }
     
     clearMatches(matches) {
         this.deletedJewels = 0;
         for (const m of matches) {
-            this.cells[m.y][m.x] = null;
-            this.deletedJewels++;
+            // Aseguramos que la celda tiene algo antes de contarla (por seguridad)
+            if (this.cells[m.y][m.x] !== null) {
+                this.cells[m.y][m.x] = null;
+                this.deletedJewels++;
+            }
         }
-
         return this.deletedJewels;
     }
     
     applyGravity() {
         for (let x = 0; x < this.cols; x++) {
-        let writeRow = this.rows - 1;
+            let writeRow = this.rows - 1;
 
             for (let y = this.rows - 1; y >= 0; y--) {
                 if (this.cells[y][x] !== null) {
@@ -152,11 +197,10 @@ class Grid {
             const matches = this.findMatches();
             if (matches.length === 0) break;
 
-            this.clearMatches(matches);
+            const clearedCount = this.clearMatches(matches);
             this.applyGravity();
-
-
-            totalCleared += matches.length;
+            
+            totalCleared += clearedCount;
         }
 
         return totalCleared;
@@ -184,6 +228,4 @@ class Grid {
             }
         }
     }
-
-    
 }
