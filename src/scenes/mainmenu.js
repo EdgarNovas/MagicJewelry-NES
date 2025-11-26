@@ -13,7 +13,7 @@ class MainMenu extends Phaser.Scene {
     unique.forEach(name => this.exts.forEach(ext => this.load.image(`${name}__${ext}`, `${name}.${ext}`)));
   }
 
-  create() {
+  async create() {
     const width = gamePrefs.gameWidth;
     const height = gamePrefs.gameHeight;
 
@@ -36,7 +36,12 @@ class MainMenu extends Phaser.Scene {
 
     fitInside(this.slide, width, height, this.scaleFactor);
 
+    this.timings = { fadeIn: 120, hold: 220, fadeOut: 80 };
+
+    await waitForFont('Press Start 2P');
+
     // Texto 
+    
     const titleY = this.topY + (this.slide.displayHeight / 2) + 200;
 
     this.title = this.add.text(width / 2, titleY, '©1990', {
@@ -57,6 +62,7 @@ class MainMenu extends Phaser.Scene {
       align: 'center'
     }).setOrigin(-0.5, -1).setDepth(11);
 
+    
     this.title = this.add.text(width / 2, titleY, 'HWANG SHINWEI', {
       fontFamily: '"Press Start 2P"',
       fontSize: '25px',          
@@ -84,8 +90,6 @@ class MainMenu extends Phaser.Scene {
       strokeThickness: 3,
       align: 'center'
     }).setOrigin(-0.1, 1).setDepth(11);
-
-    this.timings = { fadeIn: 120, hold: 220, fadeOut: 80 };
 
     this.currentIndex = 0;
     this.showSlide(this.currentIndex);
@@ -142,5 +146,22 @@ function fitInside(img, W, H, factor = 1){
   const s = Math.min(W / src.width, H / src.height) * factor;
   img.setScale(s);
 }
+
+function waitForFont(family, timeoutMs = 4000){
+  return new Promise((resolve) => {
+    if (!document.fonts) return resolve();
+    if (document.fonts.check(`16px "${family}"`)) return resolve();
+
+    let done = false;
+    const finish = () => { if (!done) { done = true; resolve(); } };
+
+    document.fonts.load(`16px "${family}"`).then(finish).catch(finish);
+    document.fonts.load(`24px "${family}"`).then(finish).catch(()=>{});
+    document.fonts.ready?.then(finish).catch(()=>{});
+
+    setTimeout(finish, timeoutMs);
+  });
+}
+
 
 window.MainMenu = MainMenu;
