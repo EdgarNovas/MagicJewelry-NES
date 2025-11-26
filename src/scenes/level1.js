@@ -186,8 +186,8 @@ class level1 extends Phaser.Scene {
         this.currentPiece.shiftPosition();
         this.shiftSFX?.play({ volume: 0.7 });
       }
-      if (this.cursors.right.isDown) this.currentPiece.moveHotizontally(true);
-      if (this.cursors.left.isDown)  this.currentPiece.moveHotizontally(false);
+      if (this.cursors.right.isDown) this.currentPiece.moveHorizontally(true);
+      if (this.cursors.left.isDown)  this.currentPiece.moveHorizontally(false);
     }
 
     const newLevel = Math.floor(this.jewelryPoints / 10);

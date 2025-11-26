@@ -28,3 +28,13 @@ export const SCALE =
     AUTO_CENTER: 'CENTER_BOTH', // Phaser.Scale.CENTER_BOTH
     ZOOM: 3                     //Para pixelart: escala lógica x3 sin deformar
 }
+
+export const PIECE =
+{
+    DROP_INTERVAL:
+    {
+        AUTOMATIC: 1000,        // ms
+        FAST: 25,               // ms
+        LVL_SUBTRACTION: 50  // ms
+    }
+}

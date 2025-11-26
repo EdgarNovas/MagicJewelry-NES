@@ -1,3 +1,5 @@
+//import { PIECE } from "../core/constants";
+
 class Piece {
     constructor(scene, grid, x) {
         this.scene = scene;
@@ -21,10 +23,14 @@ class Piece {
         });
 
         this.dropTimer = 0;
-        this.automaticDropInterval = 1000; // ms
-        this.fastDropInterval = 25; // ms
-        this.dropInterval = this.automaticDropInterval;
+        //this.dropInterval = PIECE.DROP_INTERVAL.AUTOMATIC;
+        
+        // Constantes temporales mientras no tenemos lo de usar core/constants
+        this.automaticDropInterval = 1000;
+        this.fastDropInterval = 25;
+        this.levelSubtractionInterval = 100;
 
+        this.dropInterval = this.automaticDropInterval // Temporal
 
         this.moveTimer = 0;
         this.moveInterval = 100;
@@ -40,16 +46,16 @@ class Piece {
         }
         
         if(!this.alive) return;
-    // actualizar posiciones visuales + colores
-    for (let i = 0; i < this.gems.length; i++) {
-        const g = this.gems[i];
-        this.sprites[i].setTexture(g.color);
+        // actualizar posiciones visuales + colores
+        for (let i = 0; i < this.gems.length; i++) {
+            const g = this.gems[i];
+            this.sprites[i].setTexture(g.color);
 
-        const posX = this.grid.offsetX + g.x * this.grid.cellSize + this.grid.cellSize / 2;
-        const posY = this.grid.offsetY + g.y * this.grid.cellSize + this.grid.cellSize / 2;
-        this.sprites[i].setPosition(posX, posY);
+            const posX = this.grid.offsetX + g.x * this.grid.cellSize + this.grid.cellSize / 2;
+            const posY = this.grid.offsetY + g.y * this.grid.cellSize + this.grid.cellSize / 2;
+            this.sprites[i].setPosition(posX, posY);
+        }
     }
-}
     
     moveDown() {
         if (!this.alive) return;
@@ -88,7 +94,7 @@ class Piece {
     }
 
 
-    moveHotizontally(right) {
+    moveHorizontally(right) {
         if(this.moveTimer < this.moveInterval || !this.alive) return;
         this.moveTimer = 0;
 
@@ -113,22 +119,26 @@ class Piece {
         }
     }
 
-    accelerateMovement(accelerate)
-    {
-        if (accelerate)
-            this.dropInterval = this.fastDropInterval;
-        else
-            this.dropInterval = this.automaticDropInterval;
+    accelerateMovement(accelerate) {
+        if (accelerate) {
+            //this.dropInterval = PIECE.DROP_INTERVAL.FAST;
+            this.dropInterval = this.fastDropInterval; // Temporal
+        } else {
+            //this.dropInterval = PIECE.DROP_INTERVAL.AUTOMATIC - this.scene.jewelryLevel * PIECE.DROP_INTERVAL.LVL_SUBTRACTION;
+            //if (this.dropInterval < PIECE.DROP_INTERVAL.FAST) this.dropInterval = PIECE.DROP_INTERVAL.FAST;
+            this.dropInterval = this.automaticDropInterval - this.scene.jewelryLevel * this.levelSubtractionInterval; // Temporal
+            if (this.dropInterval < this.fastDropInterval) this.dropInterval = this.fastDropInterval; // Temporal
+        }
     }
 
-   shiftPosition() {
-    // Rota solo los colores
-    const firstColor = this.gems[0].color;
-    this.gems[0].color = this.gems[1].color;
-    this.gems[1].color = this.gems[2].color;
-    this.gems[2].color = firstColor;
+    shiftPosition() {
+        // Rota solo los colores
+        const firstColor = this.gems[0].color;
+        this.gems[0].color = this.gems[1].color;
+        this.gems[1].color = this.gems[2].color;
+        this.gems[2].color = firstColor;
 
-    this.scene.shiftSFX.play();
-}
+        this.scene.shiftSFX.play();
+    }   
 
 }
