@@ -150,6 +150,9 @@ class level1 extends Phaser.Scene {
         }
         */
 
+    this.jewelryLevel = 0;
+    this.jewelryPoints = 0; 
+
   }
 
   update(time, delta) {
@@ -190,7 +193,9 @@ class level1 extends Phaser.Scene {
         }
     }
 
-    
+    this.jewelryLevel = Math.floor(this.jewelryPoints/10) 
+    console.log("JewelryLevel: " + this.jewelryLevel)   
+    console.log("JewelryPoints: " + this.jewelryPoints)   
   }
 
   spawnNewPiece() {

@@ -121,9 +121,13 @@ class Grid {
     }
     
     clearMatches(matches) {
+        this.deletedJewels = 0;
         for (const m of matches) {
             this.cells[m.y][m.x] = null;
+            this.deletedJewels++;
         }
+
+        return this.deletedJewels;
     }
     
     applyGravity() {

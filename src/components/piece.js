@@ -60,7 +60,8 @@ class Piece {
             this.scene.fallToGroundSFX.play(); // Problem
             
             this.grid.mergePiece(this);
-            this.grid.resolveMatches();
+            const cleared = this.grid.resolveMatches();
+            this.scene.jewelryPoints += cleared;
             this.grid.redraw();
             this.alive = false;
 
