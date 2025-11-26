@@ -2,222 +2,217 @@
 class level1 extends Phaser.Scene {
   constructor() { super({ key: 'level1' }); }
 
-     preload() {
-        this.load.setPath('assets/sprites/static');
-        this.load.image('magenta', 'gem1.png');
-        this.load.image('yellow', 'gem2.png');
-        this.load.image('purple', 'gem3.png');
-        this.load.image('orange', 'gem4.png');
-        this.load.image('blue', 'gem5.png');
-        this.load.image('green', 'gem6.png');
-        this.load.image('cross', 'xblock1.png');
+  preload() {
+    this.load.setPath('assets/sprites/static');
+    this.load.image('magenta', 'gem1.png');
+    this.load.image('yellow',  'gem2.png');
+    this.load.image('purple',  'gem3.png');
+    this.load.image('orange',  'gem4.png');
+    this.load.image('blue',    'gem5.png');
+    this.load.image('green',   'gem6.png');
+    this.load.image('cross',   'xblock1.png');
 
-        this.load.setPath('assets/sounds/effects');
-        this.load.audio('shift', 'shiftPosition.wav');
-        this.load.audio('fall', 'fallToGround.wav');
-        this.load.audio('gameOver', 'gameOverSweep.wav');
+    this.load.setPath('assets/sounds/effects');
+    this.load.audio('shift',    'shiftPosition.wav');
+    this.load.audio('fall',     'fallToGround.wav');
+    this.load.audio('gameOver', 'gameOverSweep.wav');
 
-        this.load.setPath('assets/sprites/backgrounds');
-        this.load.image('background1', 'bg1.png');
+    this.load.setPath('assets/sprites/backgrounds');
+    this.load.image('bg1', 'bg1.png');
+    this.load.image('bg2', 'bg2.png');
+    this.load.image('bg3', 'bg3.png');
+    this.load.image('bg4', 'bg4.png');
+    this.load.image('bg5', 'bg5.png');
+    this.load.image('bg6', 'bg6.png');
+    this.load.image('bg7', 'bg7.png');
+    this.load.image('bg8', 'bg8.png');
 
-        this.load.setPath('assets/sprites/spritesheets');
-        this.load.spritesheet('stars', 'stars.png', { frameWidth: 4, frameHeight: 3 });
 
-        this.load.setPath('assets/sprites/static');
-        this.load.image('moon', 'moon.png');
+    this.load.setPath('assets/sprites/spritesheets');
+    this.load.spritesheet('stars', 'stars.png', { frameWidth: 4, frameHeight: 3 });
 
-        this.load.setPath('assets/sprites/ui');
-        this.load.spritesheet('gameoverText', 'gameover_text_1.png',
-        {frameWidth:80,frameHeight:8});
+    this.load.setPath('assets/sprites/static');
+    this.load.image('moon', 'moon.png');
 
-        this.cursors = this.input.keyboard.createCursorKeys();
-       
-    }
+    this.load.setPath('assets/sprites/ui');
+    this.load.spritesheet('gameoverText', 'gameover_text_1.png', { frameWidth:80, frameHeight:8 });
 
-  
+    this.cursors = this.input.keyboard.createCursorKeys();
+  }
 
-    create() {
-        const GW = this.scale.width;
-        const GH = this.scale.height;
+  create() {
+    const GW = this.scale.width;
+    const GH = this.scale.height;
 
-        
-        const baseW = 256, baseH = 240;
-        const ZOOM = 3;
-        const PF = { left: 39, top: 14, width: 124, height: 212 };
-        const COLS = 6, ROWS = 13;
+    this.baseW = 256; this.baseH = 240;
+    this.ZOOM = 3;
+    this.PF = { left: 39, top: 14, width: 124, height: 212 };
+    this.COLS = 6; this.ROWS = 13;
 
-        const marginX = Math.floor((GW - baseW * ZOOM) / 2);
-        const marginY = Math.floor((GH - baseH * ZOOM) / 2);
+    this.marginX = Math.floor((GW - this.baseW * this.ZOOM) / 2);
+    this.marginY = Math.floor((GH - this.baseH * this.ZOOM) / 2);
 
-        const SKY = { left: 170, top: 8, width: 78, height: 224 };
-        const skyRect = new Phaser.Geom.Rectangle(
-        marginX + SKY.left * ZOOM,
-        marginY + SKY.top * ZOOM,
-        SKY.width * ZOOM,
-        SKY.height * ZOOM
-        );
+    // Config por nivel
+    this.LEVELS = [
+      { bg: 'bg1', SKY: { left: 170, top: 8, width: 78, height: 224 } },
+      { bg: 'bg2', SKY: { left: 170, top: 8, width: 78, height: 224 } },
+      { bg: 'bg3', SKY: { left: 170, top: 8, width: 78, height: 224 } },
+      { bg: 'bg4', SKY: { left: 170, top: 8, width: 78, height: 224 } },
+      { bg: 'bg5', SKY: { left: 170, top: 8, width: 78, height: 224 } },
+      { bg: 'bg6', SKY: { left: 170, top: 8, width: 78, height: 224 } },
+      { bg: 'bg7', SKY: { left: 170, top: 8, width: 78, height: 224 } },
+      { bg: 'bg8', SKY: { left: 170, top: 8, width: 78, height: 224 } },
+    ];
 
-        const starsTex = this.textures.get('stars');
-        const frames = starsTex && starsTex.frameTotal >= 4 ? [0, 1, 2, 3] : [0];
+    const pfX = this.marginX + this.PF.left * this.ZOOM;
+    const pfY = this.marginY + this.PF.top  * this.ZOOM;
+    const pfW = this.PF.width  * this.ZOOM;
+    const pfH = this.PF.height * this.ZOOM;
 
-        this.abg = new AnimatedBackground(this, skyRect, {
-        starKey: 'stars',
-        starFrames: frames,
-        starCount: 90,
-        speedMin: 12,
-        speedMax: 28,
-        starScale: 1.6,
-        moonKey: 'moon',
-        moonSpeed: 18 * ZOOM,
-        moonScale: 1.4 * ZOOM,
-        depth: -100
-        });
+    const cellSizeX = Math.floor(pfW / this.COLS);
+    const cellSizeY = Math.floor(pfH / this.ROWS);
+    const cellSize  = Math.min(cellSizeX, cellSizeY);
 
-        this.add.image(marginX, marginY, 'background1')
-        .setOrigin(0, 0)
-        .setScale(ZOOM)
-        .setDepth(-100);
+    const gridW = cellSize * this.COLS;
+    const gridH = cellSize * this.ROWS;
+    const offsetX = Math.round(pfX + (pfW - gridW) / 2);
+    const offsetY = Math.round(pfY + (pfH - gridH) / 2);
 
-        const pfX = marginX + PF.left * ZOOM;
-        const pfY = marginY + PF.top * ZOOM;
-        const pfW = PF.width * ZOOM;
-        const pfH = PF.height * ZOOM;
+    this.grid = new Grid(this, this.COLS, this.ROWS, cellSize, offsetX, offsetY);
 
-        const cellSizeX = Math.floor(pfW / COLS);
-        const cellSizeY = Math.floor(pfH / ROWS);
-        const cellSize = Math.min(cellSizeX, cellSizeY);
-
-        const gridW = cellSize * COLS;
-        const gridH = cellSize * ROWS;
-        const offsetX = Math.round(pfX + (pfW - gridW) / 2);
-        const offsetY = Math.round(pfY + (pfH - gridH) / 2);
-
-        this.grid = new Grid(this, COLS, ROWS, cellSize, offsetX, offsetY);
-
-        this.spawnNewPiece();
-
-        this.keyX = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X);
-        this.keyZ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
-
-        this.shiftSFX = this.sound.add('shift');
-        this.fallToGroundSFX = this.sound.add('fall');
-        this.gameOverSweepSFX = this.sound.add('gameOver');
-
-        this.sound.pauseOnBlur = false;
-
-        this.cursors.down.on('down', () => {
-            this.currentPiece.accelerateMovement(true);
-        });
-
-        this.cursors.down.on('up', () => {
-            this.currentPiece.accelerateMovement(false);
-        });
-
-        this.gameOver = false;
-
-        this.input.keyboard.on('keydown-ENTER', () => {
-          if (this.gameOver)
-            this.scene.start('MainMenu'); 
-        });
-
-        
-
-        this.gameOverAnimRow = ROWS - 1;
-        this.gameOverAnimCol = COLS - 1;
-        this.gameOverAnimTime = 40;
-        this.gameOverAnimTimer = 0;
-
-        this.anims.create(
-        {
-            key: 'gameoverTextFlash',
-            frames:this.anims.generateFrameNumbers('gameoverText', 
-            {start:0, end: 1}),
-            frameRate: 1.5,
-            repeat: -1
-        });
-
-        
-        // Problem
-        /*
-        const existing = this.sound.get('bgm');
-        if (existing) {
-        if (!existing.isPlaying) existing.play({ loop: true, volume: 0.5 });
-        this.bgm = existing;
-        
-        } else {
-        //this.bgm = this.sound.add('bgm', { loop: true, volume: 0.5 });
-        this.bgm.play();
-        }
-        */
+    const starsTex = this.textures.get('stars');
+    const frames = starsTex && starsTex.frameTotal >= 4 ? [0,1,2,3] : [0];
 
     this.jewelryLevel = 0;
-    this.jewelryPoints = 0; 
+    this.jewelryPoints = 0;
+    this._currentBgLevel = -1;
 
+    this.setupBackgroundByLevel(this.jewelryLevel, frames);
+
+    this.spawnNewPiece();
+
+    this.keyX = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X);
+    this.keyZ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
+
+    this.shiftSFX = this.sound.add('shift');
+    this.fallToGroundSFX = this.sound.add('fall');
+    this.gameOverSweepSFX = this.sound.add('gameOver');
+
+    this.sound.pauseOnBlur = false;
+
+    this.cursors.down.on('down', () => { this.currentPiece.accelerateMovement(true); });
+    this.cursors.down.on('up',   () => { this.currentPiece.accelerateMovement(false); });
+
+    this.gameOver = false;
+
+    this.input.keyboard.on('keydown-ENTER', () => {
+      if (this.gameOver) this.scene.start('MainMenu');
+    });
+
+    this.gameOverAnimRow = this.ROWS - 1;
+    this.gameOverAnimCol = this.COLS - 1;
+    this.gameOverAnimTime = 40;
+    this.gameOverAnimTimer = 0;
+
+    this.anims.create({
+      key: 'gameoverTextFlash',
+      frames: this.anims.generateFrameNumbers('gameoverText', { start:0, end:1 }),
+      frameRate: 1.5,
+      repeat: -1
+    });
+  }
+
+  setupBackgroundByLevel(level, starFrames) {
+    const idx = Math.min(level, this.LEVELS.length - 1);
+    const cfg = this.LEVELS[idx];
+    const bgKey = this.textures.exists(cfg.bg) ? cfg.bg : 'bg1';
+
+    const skyRect = new Phaser.Geom.Rectangle(
+      this.marginX + cfg.SKY.left * this.ZOOM,
+      this.marginY + cfg.SKY.top  * this.ZOOM,
+      cfg.SKY.width  * this.ZOOM,
+      cfg.SKY.height * this.ZOOM
+    );
+
+    if (!this.abg) {
+      this.abg = new AnimatedBackground(this, skyRect, {
+        starKey: 'stars',
+        starFrames: starFrames,
+        starCount: 90,
+        speedMin: 6,
+        speedMax: 14,
+        starScale: 0.8,
+        moonKey: 'moon',
+        moonSpeed: 10,
+        moonScale: 1.0,
+        depth: -120,
+        useMask: true
+      });
+    } else {
+      this.abg.setArea(skyRect);
+    }
+
+    if (!this.bgImage) {
+      this.bgImage = this.add.image(this.marginX, this.marginY, bgKey)
+        .setOrigin(0,0)
+        .setScale(this.ZOOM)
+        .setDepth(-100);
+    } else {
+      this.bgImage.setTexture(bgKey);
+    }
+
+    this._currentBgLevel = level;
   }
 
   update(time, delta) {
     this.abg?.update(delta);
 
-    if (this.gameOver)
-    {
+    if (this.gameOver) {
       this.gameOverAnimTimer += delta;
-      if (this.gameOverAnimTimer >= this.gameOverAnimTime)
-      {
+      if (this.gameOverAnimTimer >= this.gameOverAnimTime) {
         this.gameOverAnimTimer = 0;
         this.grid.setCell(this.gameOverAnimCol, this.gameOverAnimRow, 'cross');
         this.grid.redraw();
-        
         this.gameOverAnimCol--;
-        if (this.gameOverAnimCol < 0 && this.gameOverAnimRow > 0)
-        {          
+        if (this.gameOverAnimCol < 0 && this.gameOverAnimRow > 0) {
           this.gameOverSweepSFX.play();
           this.gameOverAnimCol = this.grid.cols - 1;
           this.gameOverAnimRow--;
         }
       }
-        
-    }
-    else
-    {
+    } else {
       if (this.currentPiece) this.currentPiece.update(time, delta);
       if (Phaser.Input.Keyboard.JustDown(this.keyX) || Phaser.Input.Keyboard.JustDown(this.keyZ)) {
         this.currentPiece.shiftPosition();
         this.shiftSFX?.play({ volume: 0.7 });
       }
-      // Control de movimiento lateral (mientras se mantiene pulsado)
-        if(this.cursors.right.isDown){
-            this.currentPiece.moveHotizontally(true);
-        }
-        if(this.cursors.left.isDown){
-            this.currentPiece.moveHotizontally(false);
-        }
+      if (this.cursors.right.isDown) this.currentPiece.moveHotizontally(true);
+      if (this.cursors.left.isDown)  this.currentPiece.moveHotizontally(false);
     }
 
-    this.jewelryLevel = Math.floor(this.jewelryPoints/10) 
-    console.log("JewelryLevel: " + this.jewelryLevel)   
-    console.log("JewelryPoints: " + this.jewelryPoints)   
+    const newLevel = Math.floor(this.jewelryPoints / 10);
+    if (newLevel !== this._currentBgLevel) {
+      const starsTex = this.textures.get('stars');
+      const frames = starsTex && starsTex.frameTotal >= 4 ? [0,1,2,3] : [0];
+      this.setupBackgroundByLevel(newLevel, frames);
+    }
+
+    this.jewelryLevel = newLevel;
   }
 
   spawnNewPiece() {
-    if (this.currentPiece) {
-        this.currentPiece.destroySprites(); 
-    }
+    if (this.currentPiece) this.currentPiece.destroySprites();
     this.currentPiece = new Piece(this, this.grid, 3);
   }
 
-  startGameover()
-  {
+  startGameover() {
     const GAMEOVER_TEXT_X = 62 * gamePrefs.gameScalingMultiplier;
     const GAMEOVER_TEXT_Y = 57 * gamePrefs.gameScalingMultiplier;
-    this.gameoverText = this.add.sprite(GAMEOVER_TEXT_X, GAMEOVER_TEXT_Y, 'gameoverText').
-      setScale(3).
-      setOrigin(0).
-      setDepth(10);
+    this.gameoverText = this.add.sprite(GAMEOVER_TEXT_X, GAMEOVER_TEXT_Y, 'gameoverText')
+      .setScale(3).setOrigin(0).setDepth(10);
     this.gameoverText.anims.play('gameoverTextFlash');
-
     this.gameOver = true;
   }
 }
 
 window.level1 = level1;
- 
