@@ -9,12 +9,13 @@ class Piece {
         this.gems = [];
         this.alive = true;
 
-        const colors = ['magenta', 'yellow', 'purple',
-        'orange', 'blue', 'green', 'cross'];
+        const colors = ['purple', 'yellow', 'orange',
+        'blue', 'green', 'magenta', 'cross'];
         for (let i = 0; i < 3; i++) {
             var randomColor = Phaser.Math.Between(0, colors.length - 2);
             this.gems.push({ x: this.x, y: this.y + i, color: colors[randomColor] });
         }
+        console.log("Pieza spawneada con colores: "+this.gems[0].color + " "+this.gems[1].color+" "+ this.gems[2].color);
 
         this.sprites = this.gems.map(gem => {
             const sprite = this.scene.add.image(0, 0, gem.color);
