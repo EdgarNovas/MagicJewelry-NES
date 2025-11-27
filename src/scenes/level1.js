@@ -109,6 +109,8 @@ class level1 extends Phaser.Scene {
       if (this.gameOver) this.scene.start('MainMenu');
     });
 
+    this.animatingGems = false;
+
     this.gameOverAnimRow = this.ROWS - 1;
     this.gameOverAnimCol = this.COLS - 1;
     this.gameOverAnimTime = 40;
@@ -162,12 +164,24 @@ class level1 extends Phaser.Scene {
     }
 
     this._currentBgLevel = level;
+
+    this.game.events.on(
+      'matches:cleared',
+      this.onMatchesCleared,
+      this
+    );
+  }
+
+  onMatchesCleared(clearedAmount) {
+      this.jewelryPoints += clearedAmount;
+      console.log("points: "+ this.jewelryPoints);
   }
 
   update(time, delta) {
     this.abg?.update(delta);
 
-    if (this.gameOver) {
+    if (this.gameOver)
+    {
       this.gameOverAnimTimer += delta;
       if (this.gameOverAnimTimer >= this.gameOverAnimTime) {
         this.gameOverAnimTimer = 0;
@@ -180,12 +194,21 @@ class level1 extends Phaser.Scene {
           this.gameOverAnimRow--;
         }
       }
-    } else {
+    }
+    else if (this.animatingMatches)
+    {
+      console.log("animating...");
+      this.grid.animateMatches(delta);
+    }
+    else
+    {
       if (this.currentPiece) this.currentPiece.update(time, delta);
+
       if (Phaser.Input.Keyboard.JustDown(this.keyX) || Phaser.Input.Keyboard.JustDown(this.keyZ)) {
         this.currentPiece.shiftPosition();
         this.shiftSFX?.play({ volume: 0.7 });
       }
+
       if (this.cursors.right.isDown) this.currentPiece.moveHorizontally(true);
       if (this.cursors.left.isDown)  this.currentPiece.moveHorizontally(false);
     }

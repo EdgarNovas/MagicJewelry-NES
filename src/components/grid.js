@@ -18,6 +18,9 @@ class Grid {
 
         this.graphics = scene.add.graphics();
         this.drawGridLines();
+
+        this.currentMatches = [];
+        this.matchAnimCurrTime = 0;
     }
 
     drawGridLines() {
@@ -56,7 +59,7 @@ class Grid {
         return this.cells[y][x] !== null;
     }
     
-   mergePiece(piece) {
+    mergePiece(piece) {
         for (const g of piece.gems) {
             if (g.x >= 0 && g.x < this.cols && g.y >= 0 && g.y < this.rows) {
                 this.cells[g.y][g.x] = g.color;
@@ -172,6 +175,10 @@ class Grid {
                 this.deletedJewels++;
             }
         }
+        console.log("Emitiendo evento");
+        this.scene.game.events.emit('matches:cleared', this.deletedJewels);
+        console.log("Evento finalizado");
+
         return this.deletedJewels;
     }
     
@@ -191,19 +198,31 @@ class Grid {
     }
     
     resolveMatches() {
-        let totalCleared = 0;
+        this.currentMatches = this.findMatches();
+        console.log("Se han encontrado "+this.currentMatches+" matches");
+        if (this.currentMatches.length === 0) return;
 
-        while (true) {
-            const matches = this.findMatches();
-            if (matches.length === 0) break;
+        this.startMatchesAnimation();
+    }
 
-            const clearedCount = this.clearMatches(matches);
+    startMatchesAnimation() {
+        this.scene.animatingMatches = true;
+        // sonido
+    }
+
+    animateMatches(delta) {
+        this.matchAnimCurrTime += delta;
+
+        if (this.matchAnimCurrTime >= 2000)
+        {
+            this.matchAnimCurrTime = 0;
+            this.scene.animatingMatches = false;
+            this.clearMatches(this.currentMatches);
             this.applyGravity();
-            
-            totalCleared += clearedCount;
-        }
+            this.redraw();
 
-        return totalCleared;
+            this.resolveMatches();
+        }        
     }
     
     redraw() {
