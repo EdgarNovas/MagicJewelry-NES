@@ -21,6 +21,12 @@ class Grid {
 
         this.currentMatches = [];
         this.matchAnimCurrTime = 0;
+        this.matchAnimFlashInterval = 100;
+        this.matchAnimFlashCount = 4;
+        this.matchAnimOriginalColor = null;
+        this.matchAnimFlashesDone = 0;
+        this.matchAnimColorChangeTime = 50;
+        this.matchAnimCurrColorIndex = 1;
     }
 
     drawGridLines() {
@@ -207,15 +213,88 @@ class Grid {
 
     startMatchesAnimation() {
         this.scene.animatingMatches = true;
+        this.matchAnimOriginalColor = this.cells[this.currentMatches[0].y][this.currentMatches[0].x]
         // sonido
     }
 
     animateMatches(delta) {
         this.matchAnimCurrTime += delta;
 
+        let madeChanges = false;
+
+        // Flashes iniciales
+        if (this.matchAnimCurrTime < this.matchAnimFlashInterval)
+        {
+            console.log("Primera parte");
+            for (const m of this.currentMatches) {
+                if (this.isOccupied(m.x, m.y))
+                {
+                    console.log("Se clearean varias");
+                    this.clearCell(m.x, m.y);
+                    madeChanges = true;
+                }
+            }
+        }
+        else if (this.matchAnimCurrTime < this.matchAnimFlashInterval * 2)
+        {
+            console.log("Segunda parte");
+            for (const m of this.currentMatches) {
+                if (this.cells[m.y][m.x] != this.matchAnimOriginalColor)
+                {
+                    console.log("Se setean varias")
+                    this.setCell(m.x, m.y, this.matchAnimOriginalColor);
+                    madeChanges = true;
+                }
+            }
+        }
+        else if (this.matchAnimCurrTime < this.matchAnimFlashInterval * 3)
+        {
+            this.matchAnimFlashesDone++;
+            if (this.matchAnimFlashesDone < this.matchAnimFlashCount)
+                this.matchAnimCurrTime = 0;
+        }
+
+        // Cambios de color
+        if (this.matchAnimCurrTime > this.matchAnimFlashInterval * this.matchAnimFlashCount * 3)
+        {
+            console.log("Empieza a cambiar colores");
+            let realBaseTime = this.matchAnimFlashInterval * this.matchAnimFlashCount * 3; 
+            let relativeTime = this.matchAnimCurrTime - this.matchAnimFlashInterval * this.matchAnimFlashCount * 3
+            console.log("RElative time: "+relativeTime + "   colorchangetime "+this.matchAnimColorChangeTime);
+            if (relativeTime > this.matchAnimColorChangeTime)
+            {
+                let currentColorShouldBe = this.matchAnimOriginalColor + this.matchAnimCurrColorIndex;
+                if (currentColorShouldBe > 5)
+                    currentColorShouldBe - 5;
+                console.log("Entra en la condicion. Color should  be:"+currentColorShouldBe);
+
+                for (const m of this.currentMatches) {
+                    if (this.cells[m.y][m.x] != this.currentColorShouldBe)
+                    {
+                        this.setCell(m.x, m.y, this.currentColorShouldBe);
+                        madeChanges = true;
+                    }
+                }
+
+                if (madeChanges)
+                {
+                    this.matchAnimCurrColorIndex++;
+                    if (this.matchAnimColorIndex == 0)
+                        this.matchAnimCurrTime = 3000;
+                    this.matchAnimCurrTime = realBaseTime;
+                }
+            }
+        }
+
+        if (madeChanges)
+                this.redraw();
+
         if (this.matchAnimCurrTime >= 2000)
         {
             this.matchAnimCurrTime = 0;
+            this.matchAnimFlashesDone = 0;
+            this.matchAnimCurrColorIndex = 1;
+
             this.scene.animatingMatches = false;
             this.clearMatches(this.currentMatches);
             this.applyGravity();
@@ -226,6 +305,7 @@ class Grid {
     }
     
     redraw() {
+        console.log("Redibujando");
         // elimina sprites viejos
         if (!this.staticSprites) this.staticSprites = [];
         for (const s of this.staticSprites) s.destroy();
