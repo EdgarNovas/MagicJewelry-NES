@@ -255,22 +255,36 @@ class Grid {
         }
 
         // Cambios de color
-        if (this.matchAnimCurrTime > this.matchAnimFlashInterval * this.matchAnimFlashCount * 3)
+        if (this.matchAnimFlashesDone >= this.matchAnimFlashCount && this.matchAnimCurrColorIndex < 11)
         {
             console.log("Empieza a cambiar colores");
-            let realBaseTime = this.matchAnimFlashInterval * this.matchAnimFlashCount * 3; 
-            let relativeTime = this.matchAnimCurrTime - this.matchAnimFlashInterval * this.matchAnimFlashCount * 3
+            let realBaseTime = this.matchAnimFlashInterval * this.matchAnimFlashCount * 2; 
+            let relativeTime = this.matchAnimCurrTime - this.matchAnimFlashInterval * this.matchAnimFlashCount * 2
             console.log("RElative time: "+relativeTime + "   colorchangetime "+this.matchAnimColorChangeTime);
             if (relativeTime > this.matchAnimColorChangeTime)
             {
-                let currentColorShouldBe = this.matchAnimOriginalColor + this.matchAnimCurrColorIndex;
-                if (currentColorShouldBe > 5)
-                    currentColorShouldBe - 5;
-                console.log("Entra en la condicion. Color should  be:"+currentColorShouldBe);
+                const colors = ['magenta', 'yellow', 'purple', 'orange', 'blue', 'green', 'cross']; // Temporal, luego se puede sustituir por algo de core/constants
+                let originalColorIndex = null;
+                console.log("original color text " +this.matchAnimOriginalColor);
+                for (let i=0; i<colors.length; i++)
+                {
+                    console.log(colors[i]+" es igual a "+this.matchAnimOriginalColor+"?");
+                    if (colors[i] == this.matchAnimOriginalColor)
+                        originalColorIndex = i;
+                }
+                console.log("original color index: "+originalColorIndex + "     matchanimcurrcolorindex: "+this.matchAnimCurrColorIndex);
+                let colorIndex = originalColorIndex + this.matchAnimCurrColorIndex;
+                console.log("Color index antes de ajustar: "+colorIndex);
+                colorIndex = colorIndex % 5;
+                console.log("Color index después de ajustar: "+colorIndex);
+
+                this.currentColorShouldBe = colors[colorIndex];
+                console.log("Entra en la condicion. Color should  be:"+this.currentColorShouldBe);
 
                 for (const m of this.currentMatches) {
                     if (this.cells[m.y][m.x] != this.currentColorShouldBe)
                     {
+                        console.log("Seteando cell ("+m.x+','+m.y+") a color "+this.currentColorShouldBe);
                         this.setCell(m.x, m.y, this.currentColorShouldBe);
                         madeChanges = true;
                     }
@@ -278,6 +292,7 @@ class Grid {
 
                 if (madeChanges)
                 {
+                    console.log("Changes detected when changing color");
                     this.matchAnimCurrColorIndex++;
                     if (this.matchAnimColorIndex == 0)
                         this.matchAnimCurrTime = 3000;
@@ -287,9 +302,9 @@ class Grid {
         }
 
         if (madeChanges)
-                this.redraw();
+            this.redraw();
 
-        if (this.matchAnimCurrTime >= 2000)
+        if (this.matchAnimCurrColorIndex >= 11)
         {
             this.matchAnimCurrTime = 0;
             this.matchAnimFlashesDone = 0;
