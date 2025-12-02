@@ -32,7 +32,7 @@ class Grid {
         this.matchAnimFlashCount = 4;
         this.matchAnimOriginalColor = null;
         this.matchAnimFlashesDone = 0;
-        this.matchAnimColorChangeTime = 2000;
+        this.matchAnimColorChangeTime = 50;
         this.matchAnimCurrColorIndex = 1;
     }
 
@@ -258,7 +258,7 @@ class Grid {
                         }
                     }
                 }
-                else if (this.matchAnimCurrTime < this.matchAnimFlashInterval * 3)
+                else
                 {
                     this.matchAnimFlashesDone++;
                     this.matchAnimCurrTime = 0;
@@ -270,7 +270,10 @@ class Grid {
             case this.MatchAnimPhases.CHANGING_COLORS:
                 // Cambios de color
                 if (this.matchAnimCurrColorIndex >= 11)
+                {
                     this.matchAnimPhase = this.MatchAnimPhases.END;
+                    return;
+                }
 
                 console.log("Empieza a cambiar colores");
                 console.log("Tiempo real " + this.matchAnimCurrTime);
@@ -287,7 +290,7 @@ class Grid {
                     console.log("original color index: "+originalColorIndex + "     matchanimcurrcolorindex: "+this.matchAnimCurrColorIndex);
                     let colorIndex = originalColorIndex + this.matchAnimCurrColorIndex;
                     console.log("Color index antes de ajustar: "+colorIndex);
-                    colorIndex = colorIndex % 5;
+                    colorIndex = colorIndex % 6;
                     console.log("Color index después de ajustar: "+colorIndex);
 
                     this.currentColorShouldBe = colors[colorIndex];
