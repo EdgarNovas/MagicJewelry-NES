@@ -1,6 +1,6 @@
-//import { PIECE } from "../core/constants";
+import { PIECE } from "../core/constants.js";
 
-class Piece {
+export class Piece {
     constructor(scene, grid, x) {
         this.scene = scene;
         this.grid = grid;
@@ -23,14 +23,8 @@ class Piece {
         });
 
         this.dropTimer = 0;
-        //this.dropInterval = PIECE.DROP_INTERVAL.AUTOMATIC;
         
-        // Constantes temporales mientras no tenemos lo de usar core/constants
-        this.automaticDropInterval = 1000;
-        this.fastDropInterval = 25;
-        this.levelSubtractionInterval = 100;
-
-        this.dropInterval = this.automaticDropInterval // Temporal
+        this.dropInterval = PIECE.DROP_INTERVAL.AUTOMATIC
 
         this.moveTimer = 0;
         this.moveInterval = 100;
@@ -121,13 +115,10 @@ class Piece {
 
     accelerateMovement(accelerate) {
         if (accelerate) {
-            //this.dropInterval = PIECE.DROP_INTERVAL.FAST;
-            this.dropInterval = this.fastDropInterval; // Temporal
+            this.dropInterval = PIECE.DROP_INTERVAL.FAST;
         } else {
-            //this.dropInterval = PIECE.DROP_INTERVAL.AUTOMATIC - this.scene.jewelryLevel * PIECE.DROP_INTERVAL.LVL_SUBTRACTION;
-            //if (this.dropInterval < PIECE.DROP_INTERVAL.FAST) this.dropInterval = PIECE.DROP_INTERVAL.FAST;
-            this.dropInterval = this.automaticDropInterval - this.scene.jewelryLevel * this.levelSubtractionInterval; // Temporal
-            if (this.dropInterval < this.fastDropInterval) this.dropInterval = this.fastDropInterval; // Temporal
+            this.dropInterval = PIECE.DROP_INTERVAL.AUTOMATIC - this.scene.jewelryLevel * PIECE.DROP_INTERVAL.LVL_SUBTRACTION;
+            if (this.dropInterval < PIECE.DROP_INTERVAL.FAST) this.dropInterval = PIECE.DROP_INTERVAL.FAST;
         }
     }
 

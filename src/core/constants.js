@@ -6,9 +6,32 @@
 
 export const GAME_SIZE = 
 {
-    WIDTH: 256,
-    HEIGHT: 240
+    BASE_WIDTH: 256,
+    BASE_HEIGHT: 240,
+    SCALING_MULTIPLIER: 3,
+    WIDTH: 768,
+    HEIGHT: 720
 };
+
+export const GRID = {
+    COLUMNS: 6,
+    ROWS: 13,
+    PARENT_FIT:
+    {
+        LEFT: 39,
+        TOP: 14,
+        WIDTH: 124,
+        HEIGHT: 212 
+    }
+
+}
+
+export const BG_SKY = {
+    LEFT: 170,
+    TOP: 8,
+    WIDTH: 78,
+    HEIGHT: 224
+}
 
 export const PHYSICS = 
 {

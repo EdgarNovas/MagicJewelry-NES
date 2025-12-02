@@ -1,4 +1,4 @@
-class Grid {
+export class Grid {
 
    constructor(scene, cols, rows, cellSize, offsetX = 0, offsetY = 0) {
         this.scene = scene;

@@ -1,4 +1,4 @@
-class gemsPrefab extends Phaser.GameObjects.Sprite{
+class GemsPrefab extends Phaser.GameObjects.Sprite{
     constructor(_scene, _posX, _posY, _spriteTag='gem'){
         super(_scene, _posX, _posY, _spriteTag);
         _scene.add.existing(this);  
