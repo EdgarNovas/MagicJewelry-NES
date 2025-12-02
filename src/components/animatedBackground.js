@@ -1,5 +1,5 @@
 // js/animatedbackground.js
-class AnimatedBackground {
+export class AnimatedBackground {
   constructor(scene, area, cfg = {}) {
     this.scene = scene;
     this.area = area;

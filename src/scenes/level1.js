@@ -1,5 +1,10 @@
 // js/level1.js
-class level1 extends Phaser.Scene {
+import { GAME_SIZE, GRID } from "../core/constants.js";
+import { Grid } from "../components/grid.js";
+import { Piece } from "../components/piece.js";
+import { AnimatedBackground } from "../components/animatedBackground.js";
+
+export class Level1 extends Phaser.Scene {
   constructor() { super({ key: 'level1' }); }
 
   preload() {
@@ -41,27 +46,26 @@ class level1 extends Phaser.Scene {
   }
 
   create() {
-    const GW = this.scale.width;
-    const GH = this.scale.height;
+    const GW = GAME_SIZE.WIDTH;
+    const GH = GAME_SIZE.HEIGHT;
 
-    this.baseW = 256; this.baseH = 240;
-    this.ZOOM = 3;
-    this.PF = { left: 39, top: 14, width: 124, height: 212 };
-    this.COLS = 6; this.ROWS = 13;
+    this.baseW = GAME_SIZE.BASE_WIDTH; this.baseH = GAME_SIZE.HEIGHT;
+    this.ZOOM = GAME_SIZE.SCALING_MULTIPLIER;
+    this.PF = { left: GRID.PARENT_FIT.LEFT, top:  GRID.PARENT_FIT.TOP, width:  GRID.PARENT_FIT.WIDTH, height:  GRID.PARENT_FIT.HEIGHT };
 
     this.marginX = Math.floor((GW - this.baseW * this.ZOOM) / 2);
     this.marginY = Math.floor((GH - this.baseH * this.ZOOM) / 2);
 
     // Config por nivel
     this.LEVELS = [
-      { bg: 'bg1', SKY: { left: 170, top: 8, width: 78, height: 224 } },
-      { bg: 'bg2', SKY: { left: 170, top: 8, width: 78, height: 224 } },
-      { bg: 'bg3', SKY: { left: 170, top: 8, width: 78, height: 224 } },
-      { bg: 'bg4', SKY: { left: 170, top: 8, width: 78, height: 224 } },
-      { bg: 'bg5', SKY: { left: 170, top: 8, width: 78, height: 224 } },
-      { bg: 'bg6', SKY: { left: 170, top: 8, width: 78, height: 224 } },
-      { bg: 'bg7', SKY: { left: 170, top: 8, width: 78, height: 224 } },
-      { bg: 'bg8', SKY: { left: 170, top: 8, width: 78, height: 224 } },
+      { bg: 'bg1', SKY: { left: GRID.PARENT_FIT.LEFT, top: GRID.PARENT_FIT.TOP, width:  GRID.PARENT_FIT.WIDTH, height: GRID.PARENT_FIT.HEIGHT } },
+      { bg: 'bg2', SKY: { left: GRID.PARENT_FIT.LEFT, top: GRID.PARENT_FIT.TOP, width:  GRID.PARENT_FIT.WIDTH, height: GRID.PARENT_FIT.HEIGHT } },
+      { bg: 'bg3', SKY: { left: GRID.PARENT_FIT.LEFT, top: GRID.PARENT_FIT.TOP, width:  GRID.PARENT_FIT.WIDTH, height: GRID.PARENT_FIT.HEIGHT } },
+      { bg: 'bg4', SKY: { left: GRID.PARENT_FIT.LEFT, top: GRID.PARENT_FIT.TOP, width:  GRID.PARENT_FIT.WIDTH, height: GRID.PARENT_FIT.HEIGHT } },
+      { bg: 'bg5', SKY: { left: GRID.PARENT_FIT.LEFT, top: GRID.PARENT_FIT.TOP, width:  GRID.PARENT_FIT.WIDTH, height: GRID.PARENT_FIT.HEIGHT } },
+      { bg: 'bg6', SKY: { left: GRID.PARENT_FIT.LEFT, top: GRID.PARENT_FIT.TOP, width:  GRID.PARENT_FIT.WIDTH, height: GRID.PARENT_FIT.HEIGHT } },
+      { bg: 'bg7', SKY: { left: GRID.PARENT_FIT.LEFT, top: GRID.PARENT_FIT.TOP, width:  GRID.PARENT_FIT.WIDTH, height: GRID.PARENT_FIT.HEIGHT } },
+      { bg: 'bg8', SKY: { left: GRID.PARENT_FIT.LEFT, top: GRID.PARENT_FIT.TOP, width:  GRID.PARENT_FIT.WIDTH, height: GRID.PARENT_FIT.HEIGHT } },
     ];
 
     const pfX = this.marginX + this.PF.left * this.ZOOM;
@@ -69,16 +73,16 @@ class level1 extends Phaser.Scene {
     const pfW = this.PF.width  * this.ZOOM;
     const pfH = this.PF.height * this.ZOOM;
 
-    const cellSizeX = Math.floor(pfW / this.COLS);
-    const cellSizeY = Math.floor(pfH / this.ROWS);
+    const cellSizeX = Math.floor(pfW / GRID.COLUMNS);
+    const cellSizeY = Math.floor(pfH / GRID.ROWS);
     const cellSize  = Math.min(cellSizeX, cellSizeY);
 
-    const gridW = cellSize * this.COLS;
-    const gridH = cellSize * this.ROWS;
+    const gridW = cellSize * GRID.COLUMNS;
+    const gridH = cellSize * GRID.ROWS;
     const offsetX = Math.round(pfX + (pfW - gridW) / 2);
     const offsetY = Math.round(pfY + (pfH - gridH) / 2);
 
-    this.grid = new Grid(this, this.COLS, this.ROWS, cellSize, offsetX, offsetY);
+    this.grid = new Grid(this, GRID.COLUMNS, GRID.ROWS, cellSize, offsetX, offsetY);
 
     const starsTex = this.textures.get('stars');
     const frames = starsTex && starsTex.frameTotal >= 4 ? [0,1,2,3] : [0];
@@ -109,8 +113,8 @@ class level1 extends Phaser.Scene {
       if (this.gameOver) this.scene.start('MainMenu');
     });
 
-    this.gameOverAnimRow = this.ROWS - 1;
-    this.gameOverAnimCol = this.COLS - 1;
+    this.gameOverAnimRow = GRID.ROWS - 1;
+    this.gameOverAnimCol = GRID.COLUMNS - 1;
     this.gameOverAnimTime = 40;
     this.gameOverAnimTimer = 0;
 
@@ -176,7 +180,7 @@ class level1 extends Phaser.Scene {
         this.gameOverAnimCol--;
         if (this.gameOverAnimCol < 0 && this.gameOverAnimRow > 0) {
           this.gameOverSweepSFX.play();
-          this.gameOverAnimCol = this.grid.cols - 1;
+          this.gameOverAnimCol = GRID.COLS - 1;
           this.gameOverAnimRow--;
         }
       }
@@ -214,5 +218,3 @@ class level1 extends Phaser.Scene {
     this.gameOver = true;
   }
 }
-
-window.level1 = level1;
