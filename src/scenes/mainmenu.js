@@ -162,3 +162,5 @@ function waitForFont(family, timeoutMs = 4000){
     setTimeout(finish, timeoutMs);
   });
 }
+
+window.MainMenu = MainMenu

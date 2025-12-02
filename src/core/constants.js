@@ -26,6 +26,13 @@ export const GRID = {
 
 }
 
+export const BG_SKY = {
+    LEFT: 170,
+    TOP: 8,
+    WIDTH: 78,
+    HEIGHT: 224
+}
+
 export const PHYSICS = 
 {
     TYPE:'arcade',

@@ -1,5 +1,5 @@
 // js/level1.js
-import { GAME_SIZE, GRID } from "../core/constants.js";
+import { GAME_SIZE, GRID, BG_SKY } from "../core/constants.js";
 import { Grid } from "../components/grid.js";
 import { Piece } from "../components/piece.js";
 import { AnimatedBackground } from "../components/animatedBackground.js";
@@ -49,7 +49,7 @@ export class Level1 extends Phaser.Scene {
     const GW = GAME_SIZE.WIDTH;
     const GH = GAME_SIZE.HEIGHT;
 
-    this.baseW = GAME_SIZE.BASE_WIDTH; this.baseH = GAME_SIZE.HEIGHT;
+    this.baseW = GAME_SIZE.BASE_WIDTH; this.baseH = GAME_SIZE.BASE_HEIGHT;
     this.ZOOM = GAME_SIZE.SCALING_MULTIPLIER;
     this.PF = { left: GRID.PARENT_FIT.LEFT, top:  GRID.PARENT_FIT.TOP, width:  GRID.PARENT_FIT.WIDTH, height:  GRID.PARENT_FIT.HEIGHT };
 
@@ -58,14 +58,14 @@ export class Level1 extends Phaser.Scene {
 
     // Config por nivel
     this.LEVELS = [
-      { bg: 'bg1', SKY: { left: GRID.PARENT_FIT.LEFT, top: GRID.PARENT_FIT.TOP, width:  GRID.PARENT_FIT.WIDTH, height: GRID.PARENT_FIT.HEIGHT } },
-      { bg: 'bg2', SKY: { left: GRID.PARENT_FIT.LEFT, top: GRID.PARENT_FIT.TOP, width:  GRID.PARENT_FIT.WIDTH, height: GRID.PARENT_FIT.HEIGHT } },
-      { bg: 'bg3', SKY: { left: GRID.PARENT_FIT.LEFT, top: GRID.PARENT_FIT.TOP, width:  GRID.PARENT_FIT.WIDTH, height: GRID.PARENT_FIT.HEIGHT } },
-      { bg: 'bg4', SKY: { left: GRID.PARENT_FIT.LEFT, top: GRID.PARENT_FIT.TOP, width:  GRID.PARENT_FIT.WIDTH, height: GRID.PARENT_FIT.HEIGHT } },
-      { bg: 'bg5', SKY: { left: GRID.PARENT_FIT.LEFT, top: GRID.PARENT_FIT.TOP, width:  GRID.PARENT_FIT.WIDTH, height: GRID.PARENT_FIT.HEIGHT } },
-      { bg: 'bg6', SKY: { left: GRID.PARENT_FIT.LEFT, top: GRID.PARENT_FIT.TOP, width:  GRID.PARENT_FIT.WIDTH, height: GRID.PARENT_FIT.HEIGHT } },
-      { bg: 'bg7', SKY: { left: GRID.PARENT_FIT.LEFT, top: GRID.PARENT_FIT.TOP, width:  GRID.PARENT_FIT.WIDTH, height: GRID.PARENT_FIT.HEIGHT } },
-      { bg: 'bg8', SKY: { left: GRID.PARENT_FIT.LEFT, top: GRID.PARENT_FIT.TOP, width:  GRID.PARENT_FIT.WIDTH, height: GRID.PARENT_FIT.HEIGHT } },
+      { bg: 'bg1', SKY: { left: BG_SKY.LEFT, top: BG_SKY.TOP, width:  BG_SKY.WIDTH, height: BG_SKY.HEIGHT } },
+      { bg: 'bg2', SKY: { left: BG_SKY.LEFT, top: BG_SKY.TOP, width:  BG_SKY.WIDTH, height: BG_SKY.HEIGHT } },
+      { bg: 'bg3', SKY: { left: BG_SKY.LEFT, top: BG_SKY.TOP, width:  BG_SKY.WIDTH, height: BG_SKY.HEIGHT } },
+      { bg: 'bg4', SKY: { left: BG_SKY.LEFT, top: BG_SKY.TOP, width:  BG_SKY.WIDTH, height: BG_SKY.HEIGHT } },
+      { bg: 'bg5', SKY: { left: BG_SKY.LEFT, top: BG_SKY.TOP, width:  BG_SKY.WIDTH, height: BG_SKY.HEIGHT } },
+      { bg: 'bg6', SKY: { left: BG_SKY.LEFT, top: BG_SKY.TOP, width:  BG_SKY.WIDTH, height: BG_SKY.HEIGHT } },
+      { bg: 'bg7', SKY: { left: BG_SKY.LEFT, top: BG_SKY.TOP, width:  BG_SKY.WIDTH, height: BG_SKY.HEIGHT } },
+      { bg: 'bg8', SKY: { left: BG_SKY.LEFT, top: BG_SKY.TOP, width:  BG_SKY.WIDTH, height: BG_SKY.HEIGHT } },
     ];
 
     const pfX = this.marginX + this.PF.left * this.ZOOM;
@@ -180,7 +180,7 @@ export class Level1 extends Phaser.Scene {
         this.gameOverAnimCol--;
         if (this.gameOverAnimCol < 0 && this.gameOverAnimRow > 0) {
           this.gameOverSweepSFX.play();
-          this.gameOverAnimCol = GRID.COLS - 1;
+          this.gameOverAnimCol = GRID.COLUMNS - 1;
           this.gameOverAnimRow--;
         }
       }
@@ -210,8 +210,8 @@ export class Level1 extends Phaser.Scene {
   }
 
   startGameover() {
-    const GAMEOVER_TEXT_X = 62 * gamePrefs.gameScalingMultiplier;
-    const GAMEOVER_TEXT_Y = 57 * gamePrefs.gameScalingMultiplier;
+    const GAMEOVER_TEXT_X = 62 * GAME_SIZE.SCALING_MULTIPLIER;
+    const GAMEOVER_TEXT_Y = 57 * GAME_SIZE.SCALING_MULTIPLIER;
     this.gameoverText = this.add.sprite(GAMEOVER_TEXT_X, GAMEOVER_TEXT_Y, 'gameoverText')
       .setScale(3).setOrigin(0).setDepth(10);
     this.gameoverText.anims.play('gameoverTextFlash');
