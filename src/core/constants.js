@@ -13,6 +13,17 @@ export const GAME_SIZE =
     HEIGHT: 720
 };
 
+export const HUD_NUMBERS = 
+{
+    JEWELRY_X: 567,
+    JEWELRY_Y: 150,
+    LEVEL_X: 591,
+    LEVEL_Y: 222,
+    SCORE_X: 0,
+    SCORE_Y: 0,
+    NUMBERS_SEPARATION: 24
+};
+
 export const GRID = {
     COLUMNS: 6,
     ROWS: 13,

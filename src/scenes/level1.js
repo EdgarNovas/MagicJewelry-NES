@@ -1,5 +1,5 @@
 // js/level1.js
-import { GAME_SIZE, GRID, BG_SKY } from "../core/constants.js";
+import { GAME_SIZE, GRID, BG_SKY, HUD_NUMBERS } from "../core/constants.js";
 import { Grid } from "../components/grid.js";
 import { Piece } from "../components/piece.js";
 import { AnimatedBackground } from "../components/animatedBackground.js";
@@ -130,12 +130,12 @@ export class Level1 extends Phaser.Scene {
     this.jewelryLevelSprites = [];
     
     // Posición donde quieres que aparezca
-    const jewelryLevelX = GAME_SIZE.WIDTH/2 + 183;
-    const jewelryLevelY = GAME_SIZE.HEIGHT/2 - 210;
+    const jewelryLevelX = HUD_NUMBERS.JEWELRY_X;
+    const jewelryLevelY = HUD_NUMBERS.JEWELRY_Y;
     
     // Crear 5 dígitos para LEVEL (00000..99999)
     for (let i = 0; i < 5; i++) {
-      const spr = this.add.sprite(jewelryLevelX + i * 24, jewelryLevelY, 'orangeNumbers', 0)
+      const spr = this.add.sprite(jewelryLevelX + i * HUD_NUMBERS.NUMBERS_SEPARATION, jewelryLevelY, 'orangeNumbers', 0)
       .setOrigin(0, 0)
       .setScale(3)   // lo agrandamos para pixel-art
       .setDepth(50); // por encima del gameplay
@@ -144,11 +144,11 @@ export class Level1 extends Phaser.Scene {
     
     this.levelNumberSprites = [];
 
-    const levelNumberX = GAME_SIZE.WIDTH/2 + 207;
-    const levelNumberY = GAME_SIZE.HEIGHT/2 - 138;
+    const levelNumberX = HUD_NUMBERS.LEVEL_X;
+    const levelNumberY = HUD_NUMBERS.LEVEL_Y;
 
     for (let i = 0; i < 3; i++) {
-      const spr = this.add.sprite(levelNumberX + i * 24, levelNumberY, 'greenNumbers', 0)
+      const spr = this.add.sprite(levelNumberX + i * HUD_NUMBERS.NUMBERS_SEPARATION, levelNumberY, 'greenNumbers', 0)
         .setOrigin(0, 0)
         .setScale(3)   // lo agrandamos para pixel-art
         .setDepth(50); // por encima del gameplay
