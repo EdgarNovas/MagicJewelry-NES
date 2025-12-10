@@ -41,6 +41,7 @@ export class Level1 extends Phaser.Scene {
 
     this.load.setPath('assets/sprites/ui');
     this.load.spritesheet('gameoverText', 'gameover_text_1.png', { frameWidth:80, frameHeight:8 });
+    this.load.spritesheet('orangeNumbers', 'orange_numbers_black.png', { frameWidth: 7, frameHeight: 7});
 
     this.cursors = this.input.keyboard.createCursorKeys();
   }
@@ -124,6 +125,21 @@ export class Level1 extends Phaser.Scene {
       frameRate: 1.5,
       repeat: -1
     });
+
+    this.jewelryLevelSprites = [];
+
+    // Posición donde quieres que aparezca
+    const hudX = GAME_SIZE.WIDTH/2 + 183;
+    const hudY = GAME_SIZE.HEIGHT/2 - 210;
+
+    // Crear 5 dígitos para LEVEL (00000..99999)
+    for (let i = 0; i < 5; i++) {
+      const spr = this.add.sprite(hudX + i * 24, hudY, 'orangeNumbers', 0)
+        .setOrigin(0, 0)
+        .setScale(3)   // lo agrandamos para pixel-art
+        .setDepth(50); // por encima del gameplay
+      this.jewelryLevelSprites.push(spr);
+    }
   }
 
   setupBackgroundByLevel(level, starFrames) {
@@ -202,6 +218,15 @@ export class Level1 extends Phaser.Scene {
     }
 
     this.jewelryLevel = newLevel;
+
+    // --- Actualizar los sprites del HUD ---
+    const lvl = this.jewelryPoints.toString().padStart(5, '0');
+
+    this.jewelryLevelSprites[0].setFrame(parseInt(lvl[0]));
+    this.jewelryLevelSprites[1].setFrame(parseInt(lvl[1]));
+    this.jewelryLevelSprites[2].setFrame(parseInt(lvl[2]));
+    this.jewelryLevelSprites[3].setFrame(parseInt(lvl[3]));
+    this.jewelryLevelSprites[4].setFrame(parseInt(lvl[4]));
   }
 
   spawnNewPiece() {
