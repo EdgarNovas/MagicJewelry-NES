@@ -19,8 +19,8 @@ export const HUD_NUMBERS =
     JEWELRY_Y: 150,
     LEVEL_X: 591,
     LEVEL_Y: 222,
-    SCORE_X: 0,
-    SCORE_Y: 0,
+    SCORE_X: 543,
+    SCORE_Y: 78,
     NUMBERS_SEPARATION: 24
 };
 
