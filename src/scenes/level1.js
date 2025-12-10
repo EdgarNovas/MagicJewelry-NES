@@ -1,5 +1,5 @@
 // js/level1.js
-import { GAME_SIZE, GRID, BG_SKY } from "../core/constants.js";
+import { GAME_SIZE, GRID, BG_SKY, HUD_NUMBERS } from "../core/constants.js";
 import { Grid } from "../components/grid.js";
 import { Piece } from "../components/piece.js";
 import { AnimatedBackground } from "../components/animatedBackground.js";
@@ -41,6 +41,8 @@ export class Level1 extends Phaser.Scene {
 
     this.load.setPath('assets/sprites/ui');
     this.load.spritesheet('gameoverText', 'gameover_text_1.png', { frameWidth:80, frameHeight:8 });
+    this.load.spritesheet('orangeNumbers', 'orange_numbers_black.png', { frameWidth: 7, frameHeight: 7});
+    this.load.spritesheet('greenNumbers', 'green_numbers_black.png', { frameWidth: 7, frameHeight: 7});
 
     this.cursors = this.input.keyboard.createCursorKeys();
   }
@@ -124,6 +126,34 @@ export class Level1 extends Phaser.Scene {
       frameRate: 1.5,
       repeat: -1
     });
+
+    this.jewelryLevelSprites = [];
+    
+    // Posición donde quieres que aparezca
+    const jewelryLevelX = HUD_NUMBERS.JEWELRY_X;
+    const jewelryLevelY = HUD_NUMBERS.JEWELRY_Y;
+    
+    // Crear 5 dígitos para LEVEL (00000..99999)
+    for (let i = 0; i < 5; i++) {
+      const spr = this.add.sprite(jewelryLevelX + i * HUD_NUMBERS.NUMBERS_SEPARATION, jewelryLevelY, 'orangeNumbers', 0)
+      .setOrigin(0, 0)
+      .setScale(3)   // lo agrandamos para pixel-art
+      .setDepth(50); // por encima del gameplay
+      this.jewelryLevelSprites.push(spr);
+    }
+    
+    this.levelNumberSprites = [];
+
+    const levelNumberX = HUD_NUMBERS.LEVEL_X;
+    const levelNumberY = HUD_NUMBERS.LEVEL_Y;
+
+    for (let i = 0; i < 3; i++) {
+      const spr = this.add.sprite(levelNumberX + i * HUD_NUMBERS.NUMBERS_SEPARATION, levelNumberY, 'greenNumbers', 0)
+        .setOrigin(0, 0)
+        .setScale(3)   // lo agrandamos para pixel-art
+        .setDepth(50); // por encima del gameplay
+      this.levelNumberSprites.push(spr);
+    }
   }
 
   setupBackgroundByLevel(level, starFrames) {
@@ -202,6 +232,21 @@ export class Level1 extends Phaser.Scene {
     }
 
     this.jewelryLevel = newLevel;
+
+    // --- Actualizar los sprites del HUD ---
+    const jewelry = this.jewelryPoints.toString().padStart(5, '0');
+
+    this.jewelryLevelSprites[0].setFrame(parseInt(jewelry[0]));
+    this.jewelryLevelSprites[1].setFrame(parseInt(jewelry[1]));
+    this.jewelryLevelSprites[2].setFrame(parseInt(jewelry[2]));
+    this.jewelryLevelSprites[3].setFrame(parseInt(jewelry[3]));
+    this.jewelryLevelSprites[4].setFrame(parseInt(jewelry[4]));
+
+    const lvl = this.jewelryLevel.toString().padStart(3, '0');
+
+    this.levelNumberSprites[0].setFrame(parseInt(lvl[0]));
+    this.levelNumberSprites[1].setFrame(parseInt(lvl[1]));
+    this.levelNumberSprites[2].setFrame(parseInt(lvl[2]));
   }
 
   spawnNewPiece() {
