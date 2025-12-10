@@ -42,6 +42,7 @@ export class Level1 extends Phaser.Scene {
     this.load.setPath('assets/sprites/ui');
     this.load.spritesheet('gameoverText', 'gameover_text_1.png', { frameWidth:80, frameHeight:8 });
     this.load.spritesheet('orangeNumbers', 'orange_numbers_black.png', { frameWidth: 7, frameHeight: 7});
+    this.load.spritesheet('greenNumbers', 'green_numbers_black.png', { frameWidth: 7, frameHeight: 7});
 
     this.cursors = this.input.keyboard.createCursorKeys();
   }
@@ -127,18 +128,31 @@ export class Level1 extends Phaser.Scene {
     });
 
     this.jewelryLevelSprites = [];
-
+    
     // Posición donde quieres que aparezca
-    const hudX = GAME_SIZE.WIDTH/2 + 183;
-    const hudY = GAME_SIZE.HEIGHT/2 - 210;
-
+    const jewelryLevelX = GAME_SIZE.WIDTH/2 + 183;
+    const jewelryLevelY = GAME_SIZE.HEIGHT/2 - 210;
+    
     // Crear 5 dígitos para LEVEL (00000..99999)
     for (let i = 0; i < 5; i++) {
-      const spr = this.add.sprite(hudX + i * 24, hudY, 'orangeNumbers', 0)
+      const spr = this.add.sprite(jewelryLevelX + i * 24, jewelryLevelY, 'orangeNumbers', 0)
+      .setOrigin(0, 0)
+      .setScale(3)   // lo agrandamos para pixel-art
+      .setDepth(50); // por encima del gameplay
+      this.jewelryLevelSprites.push(spr);
+    }
+    
+    this.levelNumberSprites = [];
+
+    const levelNumberX = GAME_SIZE.WIDTH/2 + 207;
+    const levelNumberY = GAME_SIZE.HEIGHT/2 - 138;
+
+    for (let i = 0; i < 3; i++) {
+      const spr = this.add.sprite(levelNumberX + i * 24, levelNumberY, 'greenNumbers', 0)
         .setOrigin(0, 0)
         .setScale(3)   // lo agrandamos para pixel-art
         .setDepth(50); // por encima del gameplay
-      this.jewelryLevelSprites.push(spr);
+      this.levelNumberSprites.push(spr);
     }
   }
 
@@ -220,13 +234,19 @@ export class Level1 extends Phaser.Scene {
     this.jewelryLevel = newLevel;
 
     // --- Actualizar los sprites del HUD ---
-    const lvl = this.jewelryPoints.toString().padStart(5, '0');
+    const jewelry = this.jewelryPoints.toString().padStart(5, '0');
 
-    this.jewelryLevelSprites[0].setFrame(parseInt(lvl[0]));
-    this.jewelryLevelSprites[1].setFrame(parseInt(lvl[1]));
-    this.jewelryLevelSprites[2].setFrame(parseInt(lvl[2]));
-    this.jewelryLevelSprites[3].setFrame(parseInt(lvl[3]));
-    this.jewelryLevelSprites[4].setFrame(parseInt(lvl[4]));
+    this.jewelryLevelSprites[0].setFrame(parseInt(jewelry[0]));
+    this.jewelryLevelSprites[1].setFrame(parseInt(jewelry[1]));
+    this.jewelryLevelSprites[2].setFrame(parseInt(jewelry[2]));
+    this.jewelryLevelSprites[3].setFrame(parseInt(jewelry[3]));
+    this.jewelryLevelSprites[4].setFrame(parseInt(jewelry[4]));
+
+    const lvl = this.jewelryLevel.toString().padStart(3, '0');
+
+    this.levelNumberSprites[0].setFrame(parseInt(lvl[0]));
+    this.levelNumberSprites[1].setFrame(parseInt(lvl[1]));
+    this.levelNumberSprites[2].setFrame(parseInt(lvl[2]));
   }
 
   spawnNewPiece() {
