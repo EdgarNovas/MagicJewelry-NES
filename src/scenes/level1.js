@@ -43,6 +43,7 @@ export class Level1 extends Phaser.Scene {
     this.load.spritesheet('gameoverText', 'gameover_text_1.png', { frameWidth:80, frameHeight:8 });
     this.load.spritesheet('orangeNumbers', 'orange_numbers_black.png', { frameWidth: 7, frameHeight: 7});
     this.load.spritesheet('greenNumbers', 'green_numbers_black.png', { frameWidth: 7, frameHeight: 7});
+    this.load.spritesheet('blueNumbers', 'blue_numbers_black.png', { frameWidth: 7, frameHeight: 7});
 
     this.cursors = this.input.keyboard.createCursorKeys();
   }
@@ -154,6 +155,19 @@ export class Level1 extends Phaser.Scene {
         .setDepth(50); // por encima del gameplay
       this.levelNumberSprites.push(spr);
     }
+
+    this.scoreNumberSprites = [];
+
+    const scoreNumberX = HUD_NUMBERS.SCORE_X;
+    const scoreNumberY = HUD_NUMBERS.SCORE_Y;
+
+    for (let i = 0; i < 7; i++) {
+      const spr = this.add.sprite(scoreNumberX + i * HUD_NUMBERS.NUMBERS_SEPARATION, scoreNumberY, 'blueNumbers', 0)
+        .setOrigin(0, 0)
+        .setScale(3)   // lo agrandamos para pixel-art
+        .setDepth(50); // por encima del gameplay
+      this.scoreNumberSprites.push(spr);
+    }
   }
 
   setupBackgroundByLevel(level, starFrames) {
@@ -233,7 +247,7 @@ export class Level1 extends Phaser.Scene {
 
     this.jewelryLevel = newLevel;
 
-    // --- Actualizar los sprites del HUD ---
+    // --- Actualizar los valores del Jewelry, level y score ---
     const jewelry = this.jewelryPoints.toString().padStart(5, '0');
 
     this.jewelryLevelSprites[0].setFrame(parseInt(jewelry[0]));
@@ -247,6 +261,18 @@ export class Level1 extends Phaser.Scene {
     this.levelNumberSprites[0].setFrame(parseInt(lvl[0]));
     this.levelNumberSprites[1].setFrame(parseInt(lvl[1]));
     this.levelNumberSprites[2].setFrame(parseInt(lvl[2]));
+
+    /*
+    const score = this.score.toString().padStart(7, '0');
+
+    this.scoreNumberSprites[0].setFrame(parseInt(score[0]));
+    this.scoreNumberSprites[1].setFrame(parseInt(score[1]));
+    this.scoreNumberSprites[2].setFrame(parseInt(score[2]));
+    this.scoreNumberSprites[3].setFrame(parseInt(score[3]));
+    this.scoreNumberSprites[4].setFrame(parseInt(score[4]));
+    this.scoreNumberSprites[5].setFrame(parseInt(score[5]));
+    this.scoreNumberSprites[6].setFrame(parseInt(score[6]));
+    */
   }
 
   spawnNewPiece() {
