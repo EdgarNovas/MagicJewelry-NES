@@ -13,6 +13,15 @@ export const GAME_SIZE =
     HEIGHT: 720
 };
 
+export const HUD_SAVED_PIECE =
+{
+    TOP: 68,
+    LEFT: 50,
+    WIDTH: 78,
+    HEIGHT: 224
+};
+
+
 export const HUD_NUMBERS = 
 {
     JEWELRY_X: 567,

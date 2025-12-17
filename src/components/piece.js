@@ -24,7 +24,7 @@ export class Piece {
 
         this.dropTimer = 0;
         
-        this.dropInterval = PIECE.DROP_INTERVAL.AUTOMATIC
+        this.dropInterval = PIECE.DROP_INTERVAL.AUTOMATIC;
 
         this.moveTimer = 0;
         this.moveInterval = 100;

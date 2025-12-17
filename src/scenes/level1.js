@@ -1,5 +1,5 @@
 // js/level1.js
-import { GAME_SIZE, GRID, BG_SKY, HUD_NUMBERS } from "../core/constants.js";
+import { GAME_SIZE, GRID, BG_SKY, HUD_NUMBERS,HUD_SAVED_PIECE } from "../core/constants.js";
 import { Grid } from "../components/grid.js";
 import { Piece } from "../components/piece.js";
 import { AnimatedBackground } from "../components/animatedBackground.js";
@@ -95,7 +95,7 @@ export class Level1 extends Phaser.Scene {
     this._currentBgLevel = -1;
 
     this.setupBackgroundByLevel(this.jewelryLevel, frames);
-
+    this.savedPiece = new Piece(this, this.grid, 3);
     this.spawnNewPiece();
 
     this.keyX = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X);
@@ -276,8 +276,26 @@ export class Level1 extends Phaser.Scene {
   }
 
   spawnNewPiece() {
-    if (this.currentPiece) this.currentPiece.destroySprites();
-    this.currentPiece = new Piece(this, this.grid, 3);
+   if (this.currentPiece) {
+        // Asegúrate de que si la pieza ya se fusionó con el grid, 
+        // solo destruyas los sprites que no se quedaron en el tablero.
+        this.currentPiece.destroySprites();
+    }
+
+    // 2. RELEVO: La que estaba esperando pasa a ser la actual
+    this.currentPiece = this.savedPiece;
+
+    // 3. CREAMOS LA SIGUIENTE: Preparamos la nueva que se verá en el HUD
+    if(this.savedPiece)
+      {
+        this.savedPiece = this.savedPiece.destroySprites;
+      }
+    
+    this.savedPiece = new Piece(this, this.grid, 3);
+    
+    this.updateSavedPiecePosition();
+    
+    
   }
 
   startGameover() {
@@ -288,4 +306,30 @@ export class Level1 extends Phaser.Scene {
     this.gameoverText.anims.play('gameoverTextFlash');
     this.gameOver = true;
   }
+  
+updateSavedPiecePosition() {
+    if (!this.savedPiece) return;
+
+    // Usamos el multiplicador de escala (que es 3 según tus constantes)
+    const scale = GAME_SIZE.SCALING_MULTIPLIER;
+    
+    // Calculamos el centro X del panel lateral (BG_SKY)
+    const panelX = (HUD_SAVED_PIECE.LEFT + (HUD_SAVED_PIECE.WIDTH / 2));
+    
+    // Altura inicial dentro del panel
+    const startY = (HUD_SAVED_PIECE.TOP);
+
+    this.savedPiece.sprites.forEach((sprite, index) => {
+        // 1. Movemos el sprite a la posición del panel
+        sprite.setPosition(panelX, startY + (index * this.grid.cellSize));
+        
+        // 2. IMPORTANTE: Le damos mucha profundidad (Depth) 
+        // para que no se quede debajo del fondo o del rectángulo verde
+        sprite.setDepth(1000); 
+        
+        // Opcional: Si las ves muy grandes en el HUD, puedes reducirlas un poco
+        // sprite.setScale(0.8); 
+    });
+}
+  
 }
