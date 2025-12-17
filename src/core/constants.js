@@ -33,6 +33,10 @@ export const HUD_NUMBERS =
     NUMBERS_SEPARATION: 24
 };
 
+export const SCORE = {
+    PER_JEWEL: 110
+}
+
 export const GRID = {
     COLUMNS: 6,
     ROWS: 13,
@@ -79,5 +83,7 @@ export const PIECE =
         AUTOMATIC: 1000,        // ms
         FAST: 25,               // ms
         LVL_SUBTRACTION: 50  // ms
-    }
+    },
+
+    NUM_OF_GEMS: 3
 }

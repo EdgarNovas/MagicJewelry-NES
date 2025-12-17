@@ -1,17 +1,17 @@
-import { PIECE } from "../core/constants.js";
+import { PIECE, SCORE } from "../core/constants.js";
 
 export class Piece {
     constructor(scene, grid, x) {
         this.scene = scene;
         this.grid = grid;
         this.x = x;
-        this.y = -3; // empieza arriba del tablero
+        this.y = -PIECE.NUM_OF_GEMS; // empieza arriba del tablero
         this.gems = [];
         this.alive = true;
 
         const colors = ['magenta', 'yellow', 'purple',
         'orange', 'blue', 'green', 'cross'];
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < PIECE.NUM_OF_GEMS; i++) {
             var randomColor = Phaser.Math.Between(0, colors.length - 2);
             this.gems.push({ x: this.x, y: this.y + i, color: colors[randomColor] });
         }
@@ -62,6 +62,7 @@ export class Piece {
             this.grid.mergePiece(this);
             const cleared = this.grid.resolveMatches();
             this.scene.jewelryPoints += cleared;
+            this.scene.score += cleared * SCORE.PER_JEWEL * Math.max(1, Math.floor(cleared / PIECE.NUM_OF_GEMS));
             this.grid.redraw();
             this.alive = false;
 
