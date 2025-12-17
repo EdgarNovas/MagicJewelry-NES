@@ -3,6 +3,7 @@ import { GAME_SIZE, GRID, BG_SKY, HUD_NUMBERS } from "../core/constants.js";
 import { Grid } from "../components/grid.js";
 import { Piece } from "../components/piece.js";
 import { AnimatedBackground } from "../components/animatedBackground.js";
+import { setHighScore } from "../core/highscore.js";
 
 export class Level1 extends Phaser.Scene {
   constructor() { super({ key: 'level1' }); }
@@ -92,6 +93,7 @@ export class Level1 extends Phaser.Scene {
 
     this.jewelryLevel = 0;
     this.jewelryPoints = 0;
+    this.score = 0;
     this._currentBgLevel = -1;
 
     this.setupBackgroundByLevel(this.jewelryLevel, frames);
@@ -262,7 +264,7 @@ export class Level1 extends Phaser.Scene {
     this.levelNumberSprites[1].setFrame(parseInt(lvl[1]));
     this.levelNumberSprites[2].setFrame(parseInt(lvl[2]));
 
-    /*
+    
     const score = this.score.toString().padStart(7, '0');
 
     this.scoreNumberSprites[0].setFrame(parseInt(score[0]));
@@ -272,7 +274,6 @@ export class Level1 extends Phaser.Scene {
     this.scoreNumberSprites[4].setFrame(parseInt(score[4]));
     this.scoreNumberSprites[5].setFrame(parseInt(score[5]));
     this.scoreNumberSprites[6].setFrame(parseInt(score[6]));
-    */
   }
 
   spawnNewPiece() {
@@ -287,5 +288,6 @@ export class Level1 extends Phaser.Scene {
       .setScale(3).setOrigin(0).setDepth(10);
     this.gameoverText.anims.play('gameoverTextFlash');
     this.gameOver = true;
+    const hiScore = setHighScore(this.score);
   }
 }
