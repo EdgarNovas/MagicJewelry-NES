@@ -1,9 +1,9 @@
 // js/level1.js
-import { GAME_SIZE, GRID, BG_SKY, HUD_NUMBERS,HUD_SAVED_PIECE } from "../core/constants.js";
+import { GAME_SIZE, GRID, BG_SKY, HUD_NUMBERS,HUD_SAVED_PIECE, JEWELRY, LEVEL, SCORE } from "../core/constants.js";
 import { Grid } from "../components/grid.js";
 import { Piece } from "../components/piece.js";
 import { AnimatedBackground } from "../components/animatedBackground.js";
-import { setHighScore } from "../core/highscore.js";
+import { getJewelryLevel, getJewelryPoints, getScore, getScoreHasChanged, getScoreToAdd, saveHighScore, setHiScore, setJewelryLevel, setScoreHasChangedFasle } from "../core/scoreSystem.js";
 
 export class Level1 extends Phaser.Scene {
   constructor() { super({ key: 'level1' }); }
@@ -45,6 +45,7 @@ export class Level1 extends Phaser.Scene {
     this.load.spritesheet('orangeNumbers', 'orange_numbers_black.png', { frameWidth: 7, frameHeight: 7});
     this.load.spritesheet('greenNumbers', 'green_numbers_black.png', { frameWidth: 7, frameHeight: 7});
     this.load.spritesheet('blueNumbers', 'blue_numbers_black.png', { frameWidth: 7, frameHeight: 7});
+    this.load.spritesheet('blueNumbersTr', 'blue_numbers_transparent.png', { frameWidth: 7, frameHeight: 7});
 
     this.cursors = this.input.keyboard.createCursorKeys();
   }
@@ -96,7 +97,7 @@ export class Level1 extends Phaser.Scene {
     this.score = 0;
     this._currentBgLevel = -1;
 
-    this.setupBackgroundByLevel(this.jewelryLevel, frames);
+    this.setupBackgroundByLevel(getJewelryLevel(), frames);
     this.savedPiece = new Piece(this, this.grid, 3);
     this.spawnNewPiece();
 
@@ -133,11 +134,11 @@ export class Level1 extends Phaser.Scene {
     this.jewelryLevelSprites = [];
     
     // Posición donde quieres que aparezca
-    const jewelryLevelX = HUD_NUMBERS.JEWELRY_X;
-    const jewelryLevelY = HUD_NUMBERS.JEWELRY_Y;
+    const jewelryLevelX = JEWELRY.JEWELRY_X;
+    const jewelryLevelY = JEWELRY.JEWELRY_Y;
     
     // Crear 5 dígitos para LEVEL (00000..99999)
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < JEWELRY.NUMBER_OF_DIGITS; i++) {
       const spr = this.add.sprite(jewelryLevelX + i * HUD_NUMBERS.NUMBERS_SEPARATION, jewelryLevelY, 'orangeNumbers', 0)
       .setOrigin(0, 0)
       .setScale(3)   // lo agrandamos para pixel-art
@@ -147,10 +148,10 @@ export class Level1 extends Phaser.Scene {
     
     this.levelNumberSprites = [];
 
-    const levelNumberX = HUD_NUMBERS.LEVEL_X;
-    const levelNumberY = HUD_NUMBERS.LEVEL_Y;
+    const levelNumberX = LEVEL.LEVEL_X;
+    const levelNumberY = LEVEL.LEVEL_Y;
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < LEVEL.NUMBER_OF_DIGITS; i++) {
       const spr = this.add.sprite(levelNumberX + i * HUD_NUMBERS.NUMBERS_SEPARATION, levelNumberY, 'greenNumbers', 0)
         .setOrigin(0, 0)
         .setScale(3)   // lo agrandamos para pixel-art
@@ -159,11 +160,12 @@ export class Level1 extends Phaser.Scene {
     }
 
     this.scoreNumberSprites = [];
+    this.scoreToAddNumberSprites = [];
 
-    const scoreNumberX = HUD_NUMBERS.SCORE_X;
-    const scoreNumberY = HUD_NUMBERS.SCORE_Y;
+    const scoreNumberX = SCORE.SCORE_X;
+    const scoreNumberY = SCORE.SCORE_Y;
 
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < SCORE.NUMBER_OF_DIGITS; i++) {
       const spr = this.add.sprite(scoreNumberX + i * HUD_NUMBERS.NUMBERS_SEPARATION, scoreNumberY, 'blueNumbers', 0)
         .setOrigin(0, 0)
         .setScale(3)   // lo agrandamos para pixel-art
@@ -214,6 +216,46 @@ export class Level1 extends Phaser.Scene {
     this._currentBgLevel = level;
   }
 
+  showFloatingScore(points, x, y) {
+
+    // Limpiamos por si había restos
+    this.scoreToAddNumberSprites.forEach(s => s.destroy());
+    this.scoreToAddNumberSprites = [];
+
+    const scoreStr = points.toString().padStart(SCORE.NUMBER_OF_DIGITS, '0');
+
+    for (let i = 0; i < SCORE.NUMBER_OF_DIGITS; i++) {
+      const spr = this.add.sprite(
+        x + i * HUD_NUMBERS.NUMBERS_SEPARATION,
+        y,
+        'blueNumbersTr',
+        parseInt(scoreStr[i])
+      )
+      .setOrigin(0, 0)
+      .setScale(3)
+      .setDepth(200);
+
+      this.scoreToAddNumberSprites.push(spr);
+    }
+
+    // Tween conjunto
+    this.tweens.add({
+      targets: this.scoreToAddNumberSprites,
+      x: `+=${GAME_SIZE.WIDTH}`,   // se mueve hasta salir de pantalla
+      duration: 2500,
+      ease: 'Cubic.easeOut',
+      onComplete: () => {
+        this.scoreToAddNumberSprites.forEach(s => s.destroy());
+        this.scoreToAddNumberSprites = [];
+      }
+    });
+
+    // Ya hemos consumido el cambio
+    setScoreHasChangedFasle();
+  }
+
+
+
   update(time, delta) {
     this.abg?.update(delta);
 
@@ -240,17 +282,17 @@ export class Level1 extends Phaser.Scene {
       if (this.cursors.left.isDown)  this.currentPiece.moveHorizontally(false);
     }
 
-    const newLevel = Math.floor(this.jewelryPoints / 10);
+    const newLevel = Math.floor(getJewelryPoints() / 10);
     if (newLevel !== this._currentBgLevel) {
       const starsTex = this.textures.get('stars');
       const frames = starsTex && starsTex.frameTotal >= 4 ? [0,1,2,3] : [0];
       this.setupBackgroundByLevel(newLevel, frames);
     }
 
-    this.jewelryLevel = newLevel;
+    setJewelryLevel(newLevel);
 
     // --- Actualizar los valores del Jewelry, level y score ---
-    const jewelry = this.jewelryPoints.toString().padStart(5, '0');
+    const jewelry = getJewelryPoints().toString().padStart(JEWELRY.NUMBER_OF_DIGITS, '0');
 
     this.jewelryLevelSprites[0].setFrame(parseInt(jewelry[0]));
     this.jewelryLevelSprites[1].setFrame(parseInt(jewelry[1]));
@@ -258,14 +300,14 @@ export class Level1 extends Phaser.Scene {
     this.jewelryLevelSprites[3].setFrame(parseInt(jewelry[3]));
     this.jewelryLevelSprites[4].setFrame(parseInt(jewelry[4]));
 
-    const lvl = this.jewelryLevel.toString().padStart(3, '0');
+    const lvl = getJewelryLevel().toString().padStart(LEVEL.NUMBER_OF_DIGITS, '0');
 
     this.levelNumberSprites[0].setFrame(parseInt(lvl[0]));
     this.levelNumberSprites[1].setFrame(parseInt(lvl[1]));
     this.levelNumberSprites[2].setFrame(parseInt(lvl[2]));
 
     
-    const score = this.score.toString().padStart(7, '0');
+    const score = getScore().toString().padStart(SCORE.NUMBER_OF_DIGITS, '0');
 
     this.scoreNumberSprites[0].setFrame(parseInt(score[0]));
     this.scoreNumberSprites[1].setFrame(parseInt(score[1]));
@@ -274,6 +316,11 @@ export class Level1 extends Phaser.Scene {
     this.scoreNumberSprites[4].setFrame(parseInt(score[4]));
     this.scoreNumberSprites[5].setFrame(parseInt(score[5]));
     this.scoreNumberSprites[6].setFrame(parseInt(score[6]));
+
+    console.log(getScoreHasChanged())
+    if(getScoreHasChanged()){
+      this.showFloatingScore(getScoreToAdd(), 0, SCORE.SCORE_TO_ADD_Y);
+    }
   }
 
   spawnNewPiece() {
@@ -306,7 +353,7 @@ export class Level1 extends Phaser.Scene {
       .setScale(3).setOrigin(0).setDepth(10);
     this.gameoverText.anims.play('gameoverTextFlash');
     this.gameOver = true;
-    const hiScore = setHighScore(this.score);
+    setHiScore(saveHighScore(getScore()));
   }
   
 updateSavedPiecePosition() {

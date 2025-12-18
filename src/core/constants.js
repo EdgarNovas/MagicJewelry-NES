@@ -21,20 +21,32 @@ export const HUD_SAVED_PIECE =
     HEIGHT: 224
 };
 
-
 export const HUD_NUMBERS = 
 {
-    JEWELRY_X: 567,
-    JEWELRY_Y: 150,
-    LEVEL_X: 591,
-    LEVEL_Y: 222,
-    SCORE_X: 543,
-    SCORE_Y: 78,
     NUMBERS_SEPARATION: 24
 };
 
+export const JEWELRY = 
+{
+    JEWELRY_X: 567,
+    JEWELRY_Y: 150,
+    NUMBER_OF_DIGITS: 5
+}
+
+export const LEVEL = 
+{
+    LEVEL_X: 591,
+    LEVEL_Y: 222,
+    NUMBER_OF_DIGITS: 3
+}
+
 export const SCORE = {
-    PER_JEWEL: 110
+    SCORE_X: 543,
+    SCORE_Y: 78,
+    NUMBER_OF_DIGITS: 7,
+    PER_JEWEL: 110,
+    KEY: 'magicjewelry_hiscore',
+    SCORE_TO_ADD_Y: 100
 }
 
 export const GRID = {
