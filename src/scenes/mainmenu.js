@@ -1,5 +1,6 @@
-import { GAME_SIZE } from "../core/constants.js";
-import { getHighScore } from "../core/highscore.js";
+import { GAME_SIZE, SCORE } from "../core/constants.js";
+//import { getHighScore } from "../core/highscore.js";
+import { initScoreSystem, loadHighScore, getHiScore, resetHighScore } from "../core/scoreSystem.js";
 
 export class MainMenu extends Phaser.Scene {
   constructor(){ super({ key:'MainMenu' }); }
@@ -14,7 +15,8 @@ export class MainMenu extends Phaser.Scene {
     this.exts = ['png','PNG','jpg','jpeg','webp'];
     const unique = Array.from(new Set(this.playOrder));
     unique.forEach(name => this.exts.forEach(ext => this.load.image(`${name}__${ext}`, `${name}.${ext}`)));
-    //localStorage.removeItem('magicjewelry_hiscore');
+    initScoreSystem();
+    //resetHighScore();
   }
 
   async create() {
@@ -84,7 +86,7 @@ export class MainMenu extends Phaser.Scene {
       align: 'center'
     }).setOrigin(1, 1).setDepth(11);
 
-    const hiScore = getHighScore().toString().padStart(7, '0');
+    const hiScore = getHiScore().toString().padStart(SCORE.NUMBER_OF_DIGITS, '0');
     this.hiScoreLabel = this.add.text(GAME_SIZE.WIDTH / 2, GAME_SIZE.HEIGHT - 65, hiScore, {
       fontFamily: '"Press Start 2P"',
       fontSize: '25px',

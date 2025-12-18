@@ -1,4 +1,4 @@
-import { PIECE, SCORE } from "../core/constants.js";
+import { PIECE } from "../core/constants.js";
 
 export class Piece {
     constructor(scene, grid, x) {
@@ -60,9 +60,7 @@ export class Piece {
             this.scene.fallToGroundSFX.play(); // Problem
             
             this.grid.mergePiece(this);
-            const cleared = this.grid.resolveMatches();
-            this.scene.jewelryPoints += cleared;
-            this.scene.score += cleared * SCORE.PER_JEWEL * Math.max(1, Math.floor(cleared / PIECE.NUM_OF_GEMS));
+            this.grid.resolveMatches();
             this.grid.redraw();
             this.alive = false;
 

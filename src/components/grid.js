@@ -1,3 +1,6 @@
+import { PIECE, SCORE } from "../core/constants.js";
+import { addJweleryPoints, setScore } from "../core/scoreSystem.js";
+
 export class Grid {
 
    constructor(scene, cols, rows, cellSize, offsetX = 0, offsetY = 0) {
@@ -169,6 +172,7 @@ export class Grid {
             // Aseguramos que la celda tiene algo antes de contarla (por seguridad)
             if (this.cells[m.y][m.x] !== null) {
                 this.cells[m.y][m.x] = null;
+                addJweleryPoints();
                 this.deletedJewels++;
             }
         }
@@ -197,13 +201,14 @@ export class Grid {
             const matches = this.findMatches();
             if (matches.length === 0) break;
 
-            const clearedCount = this.clearMatches(matches);
+            let clearedCount = this.clearMatches(matches);
             this.applyGravity();
             
             totalCleared += clearedCount;
         }
-
-        return totalCleared;
+        let scoreToAdd = totalCleared * SCORE.PER_JEWEL * Math.max(1, Math.floor(totalCleared / PIECE.NUM_OF_GEMS));
+        console.log(totalCleared);
+        setScore(scoreToAdd);
     }
     
     redraw() {
