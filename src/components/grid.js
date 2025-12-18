@@ -1,5 +1,5 @@
 import { PIECE, SCORE } from "../core/constants.js";
-import { addJweleryPoints, setScore } from "../core/scoreSystem.js";
+import { addJweleryPoints, setScore, setScoreToAdd } from "../core/scoreSystem.js";
 
 export class Grid {
 
@@ -207,7 +207,7 @@ export class Grid {
             totalCleared += clearedCount;
         }
         let scoreToAdd = totalCleared * SCORE.PER_JEWEL * Math.max(1, Math.floor(totalCleared / PIECE.NUM_OF_GEMS));
-        console.log(totalCleared);
+        if(scoreToAdd != 0) setScoreToAdd(scoreToAdd);
         setScore(scoreToAdd);
     }
     

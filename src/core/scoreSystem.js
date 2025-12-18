@@ -4,7 +4,9 @@ const state = {
   score: 0,
   jewelryPoints: 0,
   jewelryLevel: 0,
-  hiScore: 0
+  hiScore: 0,
+  scoreToAdd: 0,
+  scorehasChanged: false
 };
 
 export function loadHighScore() {
@@ -44,8 +46,25 @@ export function getScore() {
   return state.score;
 }
 
-export function setScore(scoreToAdd) {
-  state.score += scoreToAdd;
+export function setScore(newScore) {
+  state.score += newScore;
+}
+
+export function getScoreToAdd() {
+  return state.scoreToAdd;
+}
+
+export function setScoreToAdd(newScoreToAdd) {
+  state.scorehasChanged = true;
+  state.scoreToAdd = newScoreToAdd;
+}
+
+export function getScoreHasChanged(){
+  return state.scorehasChanged;
+}
+
+export function setScoreHasChangedFasle(){
+  state.scorehasChanged = false;
 }
 
 export function getJewelryPoints() {

@@ -45,7 +45,8 @@ export const SCORE = {
     SCORE_Y: 78,
     NUMBER_OF_DIGITS: 7,
     PER_JEWEL: 110,
-    KEY: 'magicjewelry_hiscore'
+    KEY: 'magicjewelry_hiscore',
+    SCORE_TO_ADD_Y: 100
 }
 
 export const GRID = {
