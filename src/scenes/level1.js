@@ -36,12 +36,12 @@ export class Level1 extends Phaser.Scene {
 
     this.load.setPath('assets/sprites/spritesheets');
     this.load.spritesheet('stars', 'stars.png', { frameWidth: 4, frameHeight: 3 });
+    this.load.spritesheet('gameoverText', 'gameOverTexts.png', { frameWidth:80, frameHeight:8 });
 
     this.load.setPath('assets/sprites/static');
     this.load.image('moon', 'moon.png');
 
     this.load.setPath('assets/sprites/ui');
-    this.load.spritesheet('gameoverText', 'gameover_text_1.png', { frameWidth:80, frameHeight:8 });
     this.load.spritesheet('orangeNumbers', 'orange_numbers_black.png', { frameWidth: 7, frameHeight: 7});
     this.load.spritesheet('greenNumbers', 'green_numbers_black.png', { frameWidth: 7, frameHeight: 7});
     this.load.spritesheet('blueNumbers', 'blue_numbers_black.png', { frameWidth: 7, frameHeight: 7});
@@ -124,12 +124,7 @@ export class Level1 extends Phaser.Scene {
     this.gameOverAnimTime = 40;
     this.gameOverAnimTimer = 0;
 
-    this.anims.create({
-      key: 'gameoverTextFlash',
-      frames: this.anims.generateFrameNumbers('gameoverText', { start:0, end:1 }),
-      frameRate: 1.5,
-      repeat: -1
-    });
+    this.loadGameOverAnims()
 
     this.jewelryLevelSprites = [];
     
@@ -282,7 +277,7 @@ export class Level1 extends Phaser.Scene {
       if (this.cursors.left.isDown)  this.currentPiece.moveHorizontally(false);
     }
 
-    const newLevel = Math.floor(getJewelryPoints() / 10);
+    const newLevel = Math.floor(getJewelryPoints() / 3);
     if (newLevel !== this._currentBgLevel) {
       const starsTex = this.textures.get('stars');
       const frames = starsTex && starsTex.frameTotal >= 4 ? [0,1,2,3] : [0];
@@ -317,10 +312,60 @@ export class Level1 extends Phaser.Scene {
     this.scoreNumberSprites[5].setFrame(parseInt(score[5]));
     this.scoreNumberSprites[6].setFrame(parseInt(score[6]));
 
-    console.log(getScoreHasChanged())
     if(getScoreHasChanged()){
       this.showFloatingScore(getScoreToAdd(), 0, SCORE.SCORE_TO_ADD_Y);
     }
+  }
+
+  loadGameOverAnims(){
+    this.anims.create({
+      key: 'gameoverTextFlashOrange',
+      frames: this.anims.generateFrameNumbers('gameoverText', { start:0, end:1 }),
+      frameRate: 1.5,
+      repeat: -1
+    });
+    this.anims.create({
+      key: 'gameoverTextFlashGray',
+      frames: this.anims.generateFrameNumbers('gameoverText', { start:2, end:3 }),
+      frameRate: 1.5,
+      repeat: -1
+    });
+    this.anims.create({
+      key: 'gameoverTextFlashPink',
+      frames: this.anims.generateFrameNumbers('gameoverText', { start:4, end:5 }),
+      frameRate: 1.5,
+      repeat: -1
+    });
+    this.anims.create({
+      key: 'gameoverTextFlashGreen1',
+      frames: this.anims.generateFrameNumbers('gameoverText', { start:6, end:7 }),
+      frameRate: 1.5,
+      repeat: -1
+    });
+    this.anims.create({
+      key: 'gameoverTextFlashBlue',
+      frames: this.anims.generateFrameNumbers('gameoverText', { start:8, end:9 }),
+      frameRate: 1.5,
+      repeat: -1
+    });
+    this.anims.create({
+      key: 'gameoverTextFlashRed',
+      frames: this.anims.generateFrameNumbers('gameoverText', { start:10, end:11 }),
+      frameRate: 1.5,
+      repeat: -1
+    });
+    this.anims.create({
+       key: 'gameoverTextFlashGreen2',
+       frames: this.anims.generateFrameNumbers('gameoverText', { start:12, end:13 }),
+       frameRate: 1.5,
+       repeat: -1
+     });
+    this.anims.create({
+      key: 'gameoverTextFlashMagenta',
+      frames: this.anims.generateFrameNumbers('gameoverText', { start:14, end:15 }),
+      frameRate: 1.5,
+      repeat: -1
+    });
   }
 
   spawnNewPiece() {
@@ -349,9 +394,44 @@ export class Level1 extends Phaser.Scene {
   startGameover() {
     const GAMEOVER_TEXT_X = 62 * GAME_SIZE.SCALING_MULTIPLIER;
     const GAMEOVER_TEXT_Y = 57 * GAME_SIZE.SCALING_MULTIPLIER;
-    this.gameoverText = this.add.sprite(GAMEOVER_TEXT_X, GAMEOVER_TEXT_Y, 'gameoverText')
+
+    this.gameOverFrame = Phaser.Math.Clamp(this._currentBgLevel, 0, this.LEVELS.length - 1)
+
+    this.gameoverText = this.add.sprite(
+      GAMEOVER_TEXT_X, 
+      GAMEOVER_TEXT_Y, 
+      'gameoverText',
+      this.gameOverFrame)
       .setScale(3).setOrigin(0).setDepth(10);
-    this.gameoverText.anims.play('gameoverTextFlash');
+    
+    switch(this.gameOverFrame){
+      case 0:
+        this.gameoverText.anims.play('gameoverTextFlashOrange');
+      break;
+      case 1:
+        this.gameoverText.anims.play('gameoverTextFlashGray');
+      break;
+      case 2:
+        this.gameoverText.anims.play('gameoverTextFlashPink');
+      break;
+      case 3:
+        this.gameoverText.anims.play('gameoverTextFlashGreen1');
+      break;
+      case 4:
+        this.gameoverText.anims.play('gameoverTextFlashBlue');
+      break;
+      case 5:
+        this.gameoverText.anims.play('gameoverTextFlashRed');
+      break;
+      case 6:
+        this.gameoverText.anims.play('gameoverTextFlashGreen2');
+      break;
+      case 7:
+        this.gameoverText.anims.play('gameoverTextFlashMagenta');
+      break;
+    }
+    //this.gameoverText.anims.play('gameoverTextFlash');
+
     this.gameOver = true;
     setHiScore(saveHighScore(getScore()));
   }
