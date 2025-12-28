@@ -61,6 +61,9 @@ export class Level1 extends Phaser.Scene {
     this.marginX = Math.floor((GW - this.baseW * this.ZOOM) / 2);
     this.marginY = Math.floor((GH - this.baseH * this.ZOOM) / 2);
 
+    this.bgImage = null;
+    this.abg = null;
+    
     // Config por nivel
     this.LEVELS = [
       { bg: 'bg1', SKY: { left: BG_SKY.LEFT, top: BG_SKY.TOP, width:  BG_SKY.WIDTH, height: BG_SKY.HEIGHT } },
