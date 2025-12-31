@@ -173,7 +173,7 @@ export class Level1 extends Phaser.Scene {
   }
 
   setupBackgroundByLevel(level, starFrames) {
-    const idx = Math.min(level, this.LEVELS.length - 1);
+    const idx = level % this.LEVELS.length;
     const cfg = this.LEVELS[idx];
     const bgKey = this.textures.exists(cfg.bg) ? cfg.bg : 'bg1';
 
@@ -398,7 +398,7 @@ export class Level1 extends Phaser.Scene {
     const GAMEOVER_TEXT_X = 62 * GAME_SIZE.SCALING_MULTIPLIER;
     const GAMEOVER_TEXT_Y = 57 * GAME_SIZE.SCALING_MULTIPLIER;
 
-    this.gameOverFrame = Phaser.Math.Clamp(this._currentBgLevel, 0, this.LEVELS.length - 1)
+    this.gameOverFrame = this._currentBgLevel % this.LEVELS.length
 
     this.gameoverText = this.add.sprite(
       GAMEOVER_TEXT_X, 
