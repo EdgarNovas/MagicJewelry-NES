@@ -280,7 +280,7 @@ export class Level1 extends Phaser.Scene {
       if (this.cursors.left.isDown)  this.currentPiece.moveHorizontally(false);
     }
 
-    const newLevel = Math.floor(getJewelryPoints() / 3);
+    const newLevel = Math.floor(getJewelryPoints() / 10);
     if (newLevel !== this._currentBgLevel) {
       const starsTex = this.textures.get('stars');
       const frames = starsTex && starsTex.frameTotal >= 4 ? [0,1,2,3] : [0];

@@ -1,4 +1,5 @@
 import { PIECE } from "../core/constants.js";
+import { getJewelryLevel } from "../core/scoreSystem.js";
 
 export class Piece {
     constructor(scene, grid, x) {
@@ -24,7 +25,10 @@ export class Piece {
 
         this.dropTimer = 0;
         
-        this.dropInterval = PIECE.DROP_INTERVAL.AUTOMATIC;
+        this.dropInterval = PIECE.DROP_INTERVAL.AUTOMATIC - getJewelryLevel() * PIECE.DROP_INTERVAL.LVL_SUBTRACTION;
+
+        if (this.dropInterval < PIECE.DROP_INTERVAL.FAST)
+            this.dropInterval = PIECE.DROP_INTERVAL.FAST;
 
         this.moveTimer = 0;
         this.moveInterval = 100;
@@ -116,9 +120,11 @@ export class Piece {
         if (accelerate) {
             this.dropInterval = PIECE.DROP_INTERVAL.FAST;
         } else {
-            this.dropInterval = PIECE.DROP_INTERVAL.AUTOMATIC - this.scene.jewelryLevel * PIECE.DROP_INTERVAL.LVL_SUBTRACTION;
+            this.dropInterval = PIECE.DROP_INTERVAL.AUTOMATIC - getJewelryLevel() * PIECE.DROP_INTERVAL.LVL_SUBTRACTION;
             if (this.dropInterval < PIECE.DROP_INTERVAL.FAST) this.dropInterval = PIECE.DROP_INTERVAL.FAST;
         }
+
+        console.log(this.dropInterval);
     }
 
     shiftPosition() {
