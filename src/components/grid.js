@@ -59,7 +59,7 @@ export class Grid {
         return this.cells[y][x] !== null;
     }
     
-   mergePiece(piece) {
+    mergePiece(piece) {
         for (const g of piece.gems) {
             if (g.x >= 0 && g.x < this.cols && g.y >= 0 && g.y < this.rows) {
                 this.cells[g.y][g.x] = g.color;
@@ -176,6 +176,10 @@ export class Grid {
                 this.deletedJewels++;
             }
         }
+        console.log("Emitiendo evento");
+        this.scene.game.events.emit('matches:cleared', this.deletedJewels);
+        console.log("Evento finalizado");
+
         return this.deletedJewels;
     }
     
@@ -195,23 +199,20 @@ export class Grid {
     }
     
     resolveMatches() {
-        let totalCleared = 0;
+        this.currentMatches = this.findMatches();
+        console.log("Se han encontrado "+this.currentMatches+" matches");
+        if (this.currentMatches.length === 0) return;
 
-        while (true) {
-            const matches = this.findMatches();
-            if (matches.length === 0) break;
-
-            let clearedCount = this.clearMatches(matches);
-            this.applyGravity();
-            
-            totalCleared += clearedCount;
-        }
+        let totalCleared = this.currentMatches.length;
         let scoreToAdd = totalCleared * SCORE.PER_JEWEL * Math.max(1, Math.floor(totalCleared / PIECE.NUM_OF_GEMS));
         if(scoreToAdd != 0) setScoreToAdd(scoreToAdd);
         setScore(scoreToAdd);
+
+        this.scene.matchAnimator.start(this.currentMatches);
     }
-    
+
     redraw() {
+        console.log("Redibujando");
         // elimina sprites viejos
         if (!this.staticSprites) this.staticSprites = [];
         for (const s of this.staticSprites) s.destroy();
