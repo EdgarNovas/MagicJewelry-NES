@@ -97,5 +97,6 @@ export const PIECE =
         LVL_SUBTRACTION: 50  // ms
     },
 
-    NUM_OF_GEMS: 3
+    NUM_OF_GEMS: 3,
+    COLORS: ['purple', 'yellow', 'orange', 'blue', 'green', 'magenta', 'cross']
 }

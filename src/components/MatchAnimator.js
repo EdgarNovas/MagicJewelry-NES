@@ -1,3 +1,5 @@
+import { PIECE } from "../core/constants.js";
+
 export default class MatchAnimator
 {
     constructor(grid, scene) {
@@ -106,9 +108,7 @@ export default class MatchAnimator
 
         if (this.currTime < this.colorChangeInterval) return false;
 
-        // Const temporal, hasta hacer el refactor
-        const colors = ['purple', 'yellow', 'orange', 'blue', 'green', 'magenta', 'cross'];
-
+        const colors = PIECE.COLORS;
         // Buscar índice del color original
         const originalIndex = colors.indexOf(this.originalColor);
         let newIndex = (originalIndex + this.currColorIndex) % 6; //El 6 habría que cambiarlo por const

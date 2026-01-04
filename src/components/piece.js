@@ -10,8 +10,7 @@ export class Piece {
         this.gems = [];
         this.alive = true;
 
-        const colors = ['purple', 'yellow', 'orange',
-        'blue', 'green', 'magenta', 'cross'];
+        const colors = PIECE.COLORS;
         for (let i = 0; i < PIECE.NUM_OF_GEMS; i++) {
             var randomColor = Phaser.Math.Between(0, colors.length - 2);
             this.gems.push({ x: this.x, y: this.y + i, color: colors[randomColor] });
