@@ -3,6 +3,7 @@ import { GAME_SIZE, GRID, BG_SKY, HUD_NUMBERS,HUD_SAVED_PIECE, JEWELRY, LEVEL, S
 import { Grid } from "../components/grid.js";
 import { Piece } from "../components/piece.js";
 import { AnimatedBackground } from "../components/animatedBackground.js";
+import MatchAnimator from "../components/matchAnimator.js";
 import { getJewelryLevel, getJewelryPoints, getScore, getScoreHasChanged, getScoreToAdd, saveHighScore, setHiScore, setJewelryLevel, setScoreHasChangedFasle } from "../core/scoreSystem.js";
 
 export class Level1 extends Phaser.Scene {
@@ -122,7 +123,7 @@ export class Level1 extends Phaser.Scene {
       if (this.gameOver) this.scene.start('MainMenu');
     });
 
-    this.animatingGems = false;
+    this.matchAnimator = new MatchAnimator(this.grid, this);
 
     this.gameOverAnimRow = GRID.ROWS - 1;
     this.gameOverAnimCol = GRID.COLUMNS - 1;
@@ -285,10 +286,10 @@ export class Level1 extends Phaser.Scene {
         }
       }
     }
-    else if (this.animatingMatches)
+    else if (this.matchAnimator.isAnimating())
     {
       console.log("animating...");
-      this.grid.animateMatches(delta);
+      this.matchAnimator.update(delta);
     }
     else
     {

@@ -13,7 +13,7 @@ export default class MatchAnimator
             ENDING: 'end'
         };
 
-        this.phase = this.phases.NOT;
+        this.phase = this.phases.INACTIVE;
 
         this.matches = [];
 
@@ -28,6 +28,10 @@ export default class MatchAnimator
         this.colorChangesCount = 9;
 
         this.currColorIndex = 1;
+    }
+
+    isAnimating() {
+        return this.phase != this.phases.INACTIVE;
     }
 
     start(matches) {
@@ -77,7 +81,7 @@ export default class MatchAnimator
             if (this.grid.isOccupied(firstGem.x, firstGem.y))
             {
                 changed = true;
-                for (const g of this.matches)
+                for (const m of this.matches)
                     this.grid.clearCell(m.x, m.y);
             }
         } else if (this.currTime < this.flashInterval * 2) {
@@ -93,7 +97,7 @@ export default class MatchAnimator
             this.currTime = 0;
 
             if (this.flashesDone >= this.flashCount)
-                this.phase = this.phases.CHANGING;
+                this.phase = this.phases.CHANGING_COLORS;
         }
 
         return changed;

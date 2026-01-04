@@ -21,22 +21,6 @@ export class Grid {
 
         this.graphics = scene.add.graphics();
         this.drawGridLines();
-
-        this.MatchAnimPhases = {
-            NOT_ANIMATING: 'notAnimating',
-            FLASHING: 'flashing',
-            CHANGING_COLORS: 'changingColors',
-            END: 'end'
-        }
-        this.matchAnimPhase = this.MatchAnimPhases.NOT_ANIMATING;
-        this.currentMatches = [];
-        this.matchAnimCurrTime = 0;
-        this.matchAnimFlashInterval = 100;
-        this.matchAnimFlashCount = 4;
-        this.matchAnimOriginalColor = null;
-        this.matchAnimFlashesDone = 0;
-        this.matchAnimColorChangeTime = 50;
-        this.matchAnimCurrColorIndex = 1;
     }
 
     drawGridLines() {
@@ -224,124 +208,9 @@ export class Grid {
         if(scoreToAdd != 0) setScoreToAdd(scoreToAdd);
         setScore(scoreToAdd);
 
-        this.startMatchesAnimation();
+        this.scene.matchAnimator.start(this.currentMatches);
     }
 
-    startMatchesAnimation() {
-        this.scene.animatingMatches = true;
-        this.matchAnimOriginalColor = this.cells[this.currentMatches[0].y][this.currentMatches[0].x]
-        this.matchAnimPhase = this.MatchAnimPhases.FLASHING;
-        // sonido
-    }
-
-    animateMatches(delta) {
-        this.matchAnimCurrTime += delta;
-
-        let madeChanges = false;
-
-        switch (this.matchAnimPhase)
-        {
-            case this.MatchAnimPhases.FLASHING:
-                // Flashes iniciales
-                if (this.matchAnimCurrTime < this.matchAnimFlashInterval)
-                {
-                    console.log("Primera parte");
-                    for (const m of this.currentMatches) {
-                        if (this.isOccupied(m.x, m.y))
-                        {
-                            console.log("Se clearean varias");
-                            this.clearCell(m.x, m.y);
-                            madeChanges = true;
-                        }
-                    }
-                }
-                else if (this.matchAnimCurrTime < this.matchAnimFlashInterval * 2)
-                {
-                    console.log("Segunda parte");
-                    for (const m of this.currentMatches) {
-                        if (this.cells[m.y][m.x] != this.matchAnimOriginalColor)
-                        {
-                            console.log("Se setean varias")
-                            this.setCell(m.x, m.y, this.matchAnimOriginalColor);
-                            madeChanges = true;
-                        }
-                    }
-                }
-                else
-                {
-                    this.matchAnimFlashesDone++;
-                    this.matchAnimCurrTime = 0;
-
-                    if (this.matchAnimFlashesDone >= this.matchAnimFlashCount)
-                        this.matchAnimPhase = this.MatchAnimPhases.CHANGING_COLORS;
-                }
-                break;
-            case this.MatchAnimPhases.CHANGING_COLORS:
-                // Cambios de color
-                if (this.matchAnimCurrColorIndex >= 11)
-                {
-                    this.matchAnimPhase = this.MatchAnimPhases.END;
-                    return;
-                }
-
-                console.log("Empieza a cambiar colores");
-                console.log("Tiempo real " + this.matchAnimCurrTime);
-                if (this.matchAnimCurrTime > this.matchAnimColorChangeTime)
-                {
-                    const colors = ['purple', 'yellow', 'orange', 'blue', 'green', 'magenta', 'cross'];                    let originalColorIndex = null;
-                    console.log("original color text " +this.matchAnimOriginalColor);
-                    for (let i=0; i<colors.length; i++)
-                    {
-                        console.log(colors[i]+" es igual a "+this.matchAnimOriginalColor+"?");
-                        if (colors[i] == this.matchAnimOriginalColor)
-                            originalColorIndex = i;
-                    }
-                    console.log("original color index: "+originalColorIndex + "     matchanimcurrcolorindex: "+this.matchAnimCurrColorIndex);
-                    let colorIndex = originalColorIndex + this.matchAnimCurrColorIndex;
-                    console.log("Color index antes de ajustar: "+colorIndex);
-                    colorIndex = colorIndex % 6;
-                    console.log("Color index después de ajustar: "+colorIndex);
-
-                    this.currentColorShouldBe = colors[colorIndex];
-                    console.log("Entra en la condicion. Color should  be:"+this.currentColorShouldBe);
-
-                    for (const m of this.currentMatches) {
-                        if (this.cells[m.y][m.x] != this.currentColorShouldBe)
-                        {
-                            console.log("Seteando cell ("+m.x+','+m.y+") a color "+this.currentColorShouldBe);
-                            this.setCell(m.x, m.y, this.currentColorShouldBe);
-                            madeChanges = true;
-                        }
-                    }
-
-                    if (madeChanges)
-                    {
-                        console.log("Changes detected when changing color");
-                        this.matchAnimCurrColorIndex++;
-                        this.matchAnimCurrTime = 0;
-                    }
-                }
-                break;
-            case this.MatchAnimPhases.END:
-                this.matchAnimPhase = this.MatchAnimPhases.NOT_ANIMATING;
-
-                this.matchAnimCurrTime = 0;
-                this.matchAnimFlashesDone = 0;
-                this.matchAnimCurrColorIndex = 1;
-
-                this.scene.animatingMatches = false;
-                this.clearMatches(this.currentMatches);
-                this.applyGravity();
-                this.redraw();
-
-                this.resolveMatches();
-                break;
-        };
-        
-        if (madeChanges)
-            this.redraw();   
-    }
-    
     redraw() {
         console.log("Redibujando");
         // elimina sprites viejos
