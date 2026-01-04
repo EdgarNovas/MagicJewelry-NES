@@ -1,17 +1,18 @@
-//import { PIECE } from "../core/constants";
+import { PIECE } from "../core/constants.js";
+import { getJewelryLevel } from "../core/scoreSystem.js";
 
-class Piece {
+export class Piece {
     constructor(scene, grid, x) {
         this.scene = scene;
         this.grid = grid;
         this.x = x;
-        this.y = -3; // empieza arriba del tablero
+        this.y = -PIECE.NUM_OF_GEMS; // empieza arriba del tablero
         this.gems = [];
         this.alive = true;
 
         const colors = ['purple', 'yellow', 'orange',
         'blue', 'green', 'magenta', 'cross'];
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < PIECE.NUM_OF_GEMS; i++) {
             var randomColor = Phaser.Math.Between(0, colors.length - 2);
             this.gems.push({ x: this.x, y: this.y + i, color: colors[randomColor] });
         }
@@ -24,14 +25,11 @@ class Piece {
         });
 
         this.dropTimer = 0;
-        //this.dropInterval = PIECE.DROP_INTERVAL.AUTOMATIC;
         
-        // Constantes temporales mientras no tenemos lo de usar core/constants
-        this.automaticDropInterval = 1000;
-        this.fastDropInterval = 25;
-        this.levelSubtractionInterval = 100;
+        this.dropInterval = PIECE.DROP_INTERVAL.AUTOMATIC - getJewelryLevel() * PIECE.DROP_INTERVAL.LVL_SUBTRACTION;
 
-        this.dropInterval = this.automaticDropInterval // Temporal
+        if (this.dropInterval < PIECE.DROP_INTERVAL.FAST)
+            this.dropInterval = PIECE.DROP_INTERVAL.FAST;
 
         this.moveTimer = 0;
         this.moveInterval = 100;
@@ -121,14 +119,13 @@ class Piece {
 
     accelerateMovement(accelerate) {
         if (accelerate) {
-            //this.dropInterval = PIECE.DROP_INTERVAL.FAST;
-            this.dropInterval = this.fastDropInterval; // Temporal
+            this.dropInterval = PIECE.DROP_INTERVAL.FAST;
         } else {
-            //this.dropInterval = PIECE.DROP_INTERVAL.AUTOMATIC - this.scene.jewelryLevel * PIECE.DROP_INTERVAL.LVL_SUBTRACTION;
-            //if (this.dropInterval < PIECE.DROP_INTERVAL.FAST) this.dropInterval = PIECE.DROP_INTERVAL.FAST;
-            this.dropInterval = this.automaticDropInterval - this.scene.jewelryLevel * this.levelSubtractionInterval; // Temporal
-            if (this.dropInterval < this.fastDropInterval) this.dropInterval = this.fastDropInterval; // Temporal
+            this.dropInterval = PIECE.DROP_INTERVAL.AUTOMATIC - getJewelryLevel() * PIECE.DROP_INTERVAL.LVL_SUBTRACTION;
+            if (this.dropInterval < PIECE.DROP_INTERVAL.FAST) this.dropInterval = PIECE.DROP_INTERVAL.FAST;
         }
+
+        console.log(this.dropInterval);
     }
 
     shiftPosition() {

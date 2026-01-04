@@ -1,5 +1,11 @@
 // js/level1.js
-class level1 extends Phaser.Scene {
+import { GAME_SIZE, GRID, BG_SKY, HUD_NUMBERS,HUD_SAVED_PIECE, JEWELRY, LEVEL, SCORE } from "../core/constants.js";
+import { Grid } from "../components/grid.js";
+import { Piece } from "../components/piece.js";
+import { AnimatedBackground } from "../components/animatedBackground.js";
+import { getJewelryLevel, getJewelryPoints, getScore, getScoreHasChanged, getScoreToAdd, saveHighScore, setHiScore, setJewelryLevel, setScoreHasChangedFasle } from "../core/scoreSystem.js";
+
+export class Level1 extends Phaser.Scene {
   constructor() { super({ key: 'level1' }); }
 
   preload() {
@@ -30,38 +36,44 @@ class level1 extends Phaser.Scene {
 
     this.load.setPath('assets/sprites/spritesheets');
     this.load.spritesheet('stars', 'stars.png', { frameWidth: 4, frameHeight: 3 });
+    this.load.spritesheet('gameoverText', 'gameOverTexts.png', { frameWidth:80, frameHeight:8 });
 
     this.load.setPath('assets/sprites/static');
     this.load.image('moon', 'moon.png');
 
     this.load.setPath('assets/sprites/ui');
-    this.load.spritesheet('gameoverText', 'gameover_text_1.png', { frameWidth:80, frameHeight:8 });
+    this.load.spritesheet('orangeNumbers', 'orange_numbers_black.png', { frameWidth: 7, frameHeight: 7});
+    this.load.spritesheet('greenNumbers', 'green_numbers_black.png', { frameWidth: 7, frameHeight: 7});
+    this.load.spritesheet('blueNumbers', 'blue_numbers_black.png', { frameWidth: 7, frameHeight: 7});
+    this.load.spritesheet('blueNumbersTr', 'blue_numbers_transparent.png', { frameWidth: 7, frameHeight: 7});
 
     this.cursors = this.input.keyboard.createCursorKeys();
   }
 
   create() {
-    const GW = this.scale.width;
-    const GH = this.scale.height;
+    const GW = GAME_SIZE.WIDTH;
+    const GH = GAME_SIZE.HEIGHT;
 
-    this.baseW = 256; this.baseH = 240;
-    this.ZOOM = 3;
-    this.PF = { left: 39, top: 14, width: 124, height: 212 };
-    this.COLS = 6; this.ROWS = 13;
+    this.baseW = GAME_SIZE.BASE_WIDTH; this.baseH = GAME_SIZE.BASE_HEIGHT;
+    this.ZOOM = GAME_SIZE.SCALING_MULTIPLIER;
+    this.PF = { left: GRID.PARENT_FIT.LEFT, top:  GRID.PARENT_FIT.TOP, width:  GRID.PARENT_FIT.WIDTH, height:  GRID.PARENT_FIT.HEIGHT };
 
     this.marginX = Math.floor((GW - this.baseW * this.ZOOM) / 2);
     this.marginY = Math.floor((GH - this.baseH * this.ZOOM) / 2);
 
+    this.bgImage = null;
+    this.abg = null;
+    
     // Config por nivel
     this.LEVELS = [
-      { bg: 'bg1', SKY: { left: 170, top: 8, width: 78, height: 224 } },
-      { bg: 'bg2', SKY: { left: 170, top: 8, width: 78, height: 224 } },
-      { bg: 'bg3', SKY: { left: 170, top: 8, width: 78, height: 224 } },
-      { bg: 'bg4', SKY: { left: 170, top: 8, width: 78, height: 224 } },
-      { bg: 'bg5', SKY: { left: 170, top: 8, width: 78, height: 224 } },
-      { bg: 'bg6', SKY: { left: 170, top: 8, width: 78, height: 224 } },
-      { bg: 'bg7', SKY: { left: 170, top: 8, width: 78, height: 224 } },
-      { bg: 'bg8', SKY: { left: 170, top: 8, width: 78, height: 224 } },
+      { bg: 'bg1', SKY: { left: BG_SKY.LEFT, top: BG_SKY.TOP, width:  BG_SKY.WIDTH, height: BG_SKY.HEIGHT } },
+      { bg: 'bg2', SKY: { left: BG_SKY.LEFT, top: BG_SKY.TOP, width:  BG_SKY.WIDTH, height: BG_SKY.HEIGHT } },
+      { bg: 'bg3', SKY: { left: BG_SKY.LEFT, top: BG_SKY.TOP, width:  BG_SKY.WIDTH, height: BG_SKY.HEIGHT } },
+      { bg: 'bg4', SKY: { left: BG_SKY.LEFT, top: BG_SKY.TOP, width:  BG_SKY.WIDTH, height: BG_SKY.HEIGHT } },
+      { bg: 'bg5', SKY: { left: BG_SKY.LEFT, top: BG_SKY.TOP, width:  BG_SKY.WIDTH, height: BG_SKY.HEIGHT } },
+      { bg: 'bg6', SKY: { left: BG_SKY.LEFT, top: BG_SKY.TOP, width:  BG_SKY.WIDTH, height: BG_SKY.HEIGHT } },
+      { bg: 'bg7', SKY: { left: BG_SKY.LEFT, top: BG_SKY.TOP, width:  BG_SKY.WIDTH, height: BG_SKY.HEIGHT } },
+      { bg: 'bg8', SKY: { left: BG_SKY.LEFT, top: BG_SKY.TOP, width:  BG_SKY.WIDTH, height: BG_SKY.HEIGHT } },
     ];
 
     const pfX = this.marginX + this.PF.left * this.ZOOM;
@@ -69,26 +81,27 @@ class level1 extends Phaser.Scene {
     const pfW = this.PF.width  * this.ZOOM;
     const pfH = this.PF.height * this.ZOOM;
 
-    const cellSizeX = Math.floor(pfW / this.COLS);
-    const cellSizeY = Math.floor(pfH / this.ROWS);
+    const cellSizeX = Math.floor(pfW / GRID.COLUMNS);
+    const cellSizeY = Math.floor(pfH / GRID.ROWS);
     const cellSize  = Math.min(cellSizeX, cellSizeY);
 
-    const gridW = cellSize * this.COLS;
-    const gridH = cellSize * this.ROWS;
+    const gridW = cellSize * GRID.COLUMNS;
+    const gridH = cellSize * GRID.ROWS;
     const offsetX = Math.round(pfX + (pfW - gridW) / 2);
     const offsetY = Math.round(pfY + (pfH - gridH) / 2);
 
-    this.grid = new Grid(this, this.COLS, this.ROWS, cellSize, offsetX, offsetY);
+    this.grid = new Grid(this, GRID.COLUMNS, GRID.ROWS, cellSize, offsetX, offsetY);
 
     const starsTex = this.textures.get('stars');
     const frames = starsTex && starsTex.frameTotal >= 4 ? [0,1,2,3] : [0];
 
     this.jewelryLevel = 0;
     this.jewelryPoints = 0;
+    this.score = 0;
     this._currentBgLevel = -1;
 
-    this.setupBackgroundByLevel(this.jewelryLevel, frames);
-
+    this.setupBackgroundByLevel(getJewelryLevel(), frames);
+    this.savedPiece = new Piece(this, this.grid, 3);
     this.spawnNewPiece();
 
     this.keyX = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X);
@@ -111,21 +124,58 @@ class level1 extends Phaser.Scene {
 
     this.animatingGems = false;
 
-    this.gameOverAnimRow = this.ROWS - 1;
-    this.gameOverAnimCol = this.COLS - 1;
+    this.gameOverAnimRow = GRID.ROWS - 1;
+    this.gameOverAnimCol = GRID.COLUMNS - 1;
     this.gameOverAnimTime = 40;
     this.gameOverAnimTimer = 0;
 
-    this.anims.create({
-      key: 'gameoverTextFlash',
-      frames: this.anims.generateFrameNumbers('gameoverText', { start:0, end:1 }),
-      frameRate: 1.5,
-      repeat: -1
-    });
+    this.loadGameOverAnims()
+
+    this.jewelryLevelSprites = [];
+    
+    // Posición donde quieres que aparezca
+    const jewelryLevelX = JEWELRY.JEWELRY_X;
+    const jewelryLevelY = JEWELRY.JEWELRY_Y;
+    
+    // Crear 5 dígitos para LEVEL (00000..99999)
+    for (let i = 0; i < JEWELRY.NUMBER_OF_DIGITS; i++) {
+      const spr = this.add.sprite(jewelryLevelX + i * HUD_NUMBERS.NUMBERS_SEPARATION, jewelryLevelY, 'orangeNumbers', 0)
+      .setOrigin(0, 0)
+      .setScale(3)   // lo agrandamos para pixel-art
+      .setDepth(50); // por encima del gameplay
+      this.jewelryLevelSprites.push(spr);
+    }
+    
+    this.levelNumberSprites = [];
+
+    const levelNumberX = LEVEL.LEVEL_X;
+    const levelNumberY = LEVEL.LEVEL_Y;
+
+    for (let i = 0; i < LEVEL.NUMBER_OF_DIGITS; i++) {
+      const spr = this.add.sprite(levelNumberX + i * HUD_NUMBERS.NUMBERS_SEPARATION, levelNumberY, 'greenNumbers', 0)
+        .setOrigin(0, 0)
+        .setScale(3)   // lo agrandamos para pixel-art
+        .setDepth(50); // por encima del gameplay
+      this.levelNumberSprites.push(spr);
+    }
+
+    this.scoreNumberSprites = [];
+    this.scoreToAddNumberSprites = [];
+
+    const scoreNumberX = SCORE.SCORE_X;
+    const scoreNumberY = SCORE.SCORE_Y;
+
+    for (let i = 0; i < SCORE.NUMBER_OF_DIGITS; i++) {
+      const spr = this.add.sprite(scoreNumberX + i * HUD_NUMBERS.NUMBERS_SEPARATION, scoreNumberY, 'blueNumbers', 0)
+        .setOrigin(0, 0)
+        .setScale(3)   // lo agrandamos para pixel-art
+        .setDepth(50); // por encima del gameplay
+      this.scoreNumberSprites.push(spr);
+    }
   }
 
   setupBackgroundByLevel(level, starFrames) {
-    const idx = Math.min(level, this.LEVELS.length - 1);
+    const idx = level % this.LEVELS.length;
     const cfg = this.LEVELS[idx];
     const bgKey = this.textures.exists(cfg.bg) ? cfg.bg : 'bg1';
 
@@ -177,6 +227,46 @@ class level1 extends Phaser.Scene {
       console.log("points: "+ this.jewelryPoints);
   }
 
+  showFloatingScore(points, x, y) {
+
+    // Limpiamos por si había restos
+    this.scoreToAddNumberSprites.forEach(s => s.destroy());
+    this.scoreToAddNumberSprites = [];
+
+    const scoreStr = points.toString().padStart(SCORE.NUMBER_OF_DIGITS, '0');
+
+    for (let i = 0; i < SCORE.NUMBER_OF_DIGITS; i++) {
+      const spr = this.add.sprite(
+        x + i * HUD_NUMBERS.NUMBERS_SEPARATION,
+        y,
+        'blueNumbersTr',
+        parseInt(scoreStr[i])
+      )
+      .setOrigin(0, 0)
+      .setScale(3)
+      .setDepth(200);
+
+      this.scoreToAddNumberSprites.push(spr);
+    }
+
+    // Tween conjunto
+    this.tweens.add({
+      targets: this.scoreToAddNumberSprites,
+      x: `+=${GAME_SIZE.WIDTH}`,   // se mueve hasta salir de pantalla
+      duration: 2500,
+      ease: 'Cubic.easeOut',
+      onComplete: () => {
+        this.scoreToAddNumberSprites.forEach(s => s.destroy());
+        this.scoreToAddNumberSprites = [];
+      }
+    });
+
+    // Ya hemos consumido el cambio
+    setScoreHasChangedFasle();
+  }
+
+
+
   update(time, delta) {
     this.abg?.update(delta);
 
@@ -190,7 +280,7 @@ class level1 extends Phaser.Scene {
         this.gameOverAnimCol--;
         if (this.gameOverAnimCol < 0 && this.gameOverAnimRow > 0) {
           this.gameOverSweepSFX.play();
-          this.gameOverAnimCol = this.grid.cols - 1;
+          this.gameOverAnimCol = GRID.COLUMNS - 1;
           this.gameOverAnimRow--;
         }
       }
@@ -213,29 +303,188 @@ class level1 extends Phaser.Scene {
       if (this.cursors.left.isDown)  this.currentPiece.moveHorizontally(false);
     }
 
-    const newLevel = Math.floor(this.jewelryPoints / 10);
+    const newLevel = Math.floor(getJewelryPoints() / 10);
     if (newLevel !== this._currentBgLevel) {
       const starsTex = this.textures.get('stars');
       const frames = starsTex && starsTex.frameTotal >= 4 ? [0,1,2,3] : [0];
       this.setupBackgroundByLevel(newLevel, frames);
     }
 
-    this.jewelryLevel = newLevel;
+    setJewelryLevel(newLevel);
+
+    // --- Actualizar los valores del Jewelry, level y score ---
+    const jewelry = getJewelryPoints().toString().padStart(JEWELRY.NUMBER_OF_DIGITS, '0');
+
+    this.jewelryLevelSprites[0].setFrame(parseInt(jewelry[0]));
+    this.jewelryLevelSprites[1].setFrame(parseInt(jewelry[1]));
+    this.jewelryLevelSprites[2].setFrame(parseInt(jewelry[2]));
+    this.jewelryLevelSprites[3].setFrame(parseInt(jewelry[3]));
+    this.jewelryLevelSprites[4].setFrame(parseInt(jewelry[4]));
+
+    const lvl = getJewelryLevel().toString().padStart(LEVEL.NUMBER_OF_DIGITS, '0');
+
+    this.levelNumberSprites[0].setFrame(parseInt(lvl[0]));
+    this.levelNumberSprites[1].setFrame(parseInt(lvl[1]));
+    this.levelNumberSprites[2].setFrame(parseInt(lvl[2]));
+
+    
+    const score = getScore().toString().padStart(SCORE.NUMBER_OF_DIGITS, '0');
+
+    this.scoreNumberSprites[0].setFrame(parseInt(score[0]));
+    this.scoreNumberSprites[1].setFrame(parseInt(score[1]));
+    this.scoreNumberSprites[2].setFrame(parseInt(score[2]));
+    this.scoreNumberSprites[3].setFrame(parseInt(score[3]));
+    this.scoreNumberSprites[4].setFrame(parseInt(score[4]));
+    this.scoreNumberSprites[5].setFrame(parseInt(score[5]));
+    this.scoreNumberSprites[6].setFrame(parseInt(score[6]));
+
+    if(getScoreHasChanged()){
+      this.showFloatingScore(getScoreToAdd(), 0, SCORE.SCORE_TO_ADD_Y);
+    }
+  }
+
+  loadGameOverAnims(){
+    this.anims.create({
+      key: 'gameoverTextFlashOrange',
+      frames: this.anims.generateFrameNumbers('gameoverText', { start:0, end:1 }),
+      frameRate: 1.5,
+      repeat: -1
+    });
+    this.anims.create({
+      key: 'gameoverTextFlashGray',
+      frames: this.anims.generateFrameNumbers('gameoverText', { start:2, end:3 }),
+      frameRate: 1.5,
+      repeat: -1
+    });
+    this.anims.create({
+      key: 'gameoverTextFlashPink',
+      frames: this.anims.generateFrameNumbers('gameoverText', { start:4, end:5 }),
+      frameRate: 1.5,
+      repeat: -1
+    });
+    this.anims.create({
+      key: 'gameoverTextFlashGreen1',
+      frames: this.anims.generateFrameNumbers('gameoverText', { start:6, end:7 }),
+      frameRate: 1.5,
+      repeat: -1
+    });
+    this.anims.create({
+      key: 'gameoverTextFlashBlue',
+      frames: this.anims.generateFrameNumbers('gameoverText', { start:8, end:9 }),
+      frameRate: 1.5,
+      repeat: -1
+    });
+    this.anims.create({
+      key: 'gameoverTextFlashRed',
+      frames: this.anims.generateFrameNumbers('gameoverText', { start:10, end:11 }),
+      frameRate: 1.5,
+      repeat: -1
+    });
+    this.anims.create({
+       key: 'gameoverTextFlashGreen2',
+       frames: this.anims.generateFrameNumbers('gameoverText', { start:12, end:13 }),
+       frameRate: 1.5,
+       repeat: -1
+     });
+    this.anims.create({
+      key: 'gameoverTextFlashMagenta',
+      frames: this.anims.generateFrameNumbers('gameoverText', { start:14, end:15 }),
+      frameRate: 1.5,
+      repeat: -1
+    });
   }
 
   spawnNewPiece() {
-    if (this.currentPiece) this.currentPiece.destroySprites();
-    this.currentPiece = new Piece(this, this.grid, 3);
+   if (this.currentPiece) {
+        // Asegúrate de que si la pieza ya se fusionó con el grid, 
+        // solo destruyas los sprites que no se quedaron en el tablero.
+        this.currentPiece.destroySprites();
+    }
+
+    // 2. RELEVO: La que estaba esperando pasa a ser la actual
+    this.currentPiece = this.savedPiece;
+
+    // 3. CREAMOS LA SIGUIENTE: Preparamos la nueva que se verá en el HUD
+    if(this.savedPiece)
+      {
+        this.savedPiece = this.savedPiece.destroySprites;
+      }
+    
+    this.savedPiece = new Piece(this, this.grid, 3);
+    
+    this.updateSavedPiecePosition();
+    
+    
   }
 
   startGameover() {
-    const GAMEOVER_TEXT_X = 62 * gamePrefs.gameScalingMultiplier;
-    const GAMEOVER_TEXT_Y = 57 * gamePrefs.gameScalingMultiplier;
-    this.gameoverText = this.add.sprite(GAMEOVER_TEXT_X, GAMEOVER_TEXT_Y, 'gameoverText')
-      .setScale(3).setOrigin(0).setDepth(10);
-    this.gameoverText.anims.play('gameoverTextFlash');
-    this.gameOver = true;
-  }
-}
+    const GAMEOVER_TEXT_X = 62 * GAME_SIZE.SCALING_MULTIPLIER;
+    const GAMEOVER_TEXT_Y = 57 * GAME_SIZE.SCALING_MULTIPLIER;
 
-window.level1 = level1;
+    this.gameOverFrame = this._currentBgLevel % this.LEVELS.length
+
+    this.gameoverText = this.add.sprite(
+      GAMEOVER_TEXT_X, 
+      GAMEOVER_TEXT_Y, 
+      'gameoverText',
+      this.gameOverFrame)
+      .setScale(3).setOrigin(0).setDepth(10);
+    
+    switch(this.gameOverFrame){
+      case 0:
+        this.gameoverText.anims.play('gameoverTextFlashOrange');
+      break;
+      case 1:
+        this.gameoverText.anims.play('gameoverTextFlashGray');
+      break;
+      case 2:
+        this.gameoverText.anims.play('gameoverTextFlashPink');
+      break;
+      case 3:
+        this.gameoverText.anims.play('gameoverTextFlashGreen1');
+      break;
+      case 4:
+        this.gameoverText.anims.play('gameoverTextFlashBlue');
+      break;
+      case 5:
+        this.gameoverText.anims.play('gameoverTextFlashRed');
+      break;
+      case 6:
+        this.gameoverText.anims.play('gameoverTextFlashGreen2');
+      break;
+      case 7:
+        this.gameoverText.anims.play('gameoverTextFlashMagenta');
+      break;
+    }
+    //this.gameoverText.anims.play('gameoverTextFlash');
+
+    this.gameOver = true;
+    setHiScore(saveHighScore(getScore()));
+  }
+  
+updateSavedPiecePosition() {
+    if (!this.savedPiece) return;
+
+    // Usamos el multiplicador de escala (que es 3 según tus constantes)
+    const scale = GAME_SIZE.SCALING_MULTIPLIER;
+    
+    // Calculamos el centro X del panel lateral (BG_SKY)
+    const panelX = (HUD_SAVED_PIECE.LEFT + (HUD_SAVED_PIECE.WIDTH / 2));
+    
+    // Altura inicial dentro del panel
+    const startY = (HUD_SAVED_PIECE.TOP);
+
+    this.savedPiece.sprites.forEach((sprite, index) => {
+        // 1. Movemos el sprite a la posición del panel
+        sprite.setPosition(panelX, startY + (index * this.grid.cellSize));
+        
+        // 2. IMPORTANTE: Le damos mucha profundidad (Depth) 
+        // para que no se quede debajo del fondo o del rectángulo verde
+        sprite.setDepth(1000); 
+        
+        // Opcional: Si las ves muy grandes en el HUD, puedes reducirlas un poco
+        // sprite.setScale(0.8); 
+    });
+}
+  
+}
