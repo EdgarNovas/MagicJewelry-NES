@@ -1,6 +1,6 @@
 import { PIECE } from "../core/constants.js";
 
-export default class MatchAnimator
+export class MatchAnimator
 {
     constructor(grid, scene) {
         this.grid = grid;
