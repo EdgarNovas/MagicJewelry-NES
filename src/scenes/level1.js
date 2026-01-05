@@ -31,6 +31,9 @@ export class Level1 extends Phaser.Scene {
     this.load.audio('fall',     'fallToGround.wav');
     this.load.audio('gameOver', 'gameOverSweep.wav');
 
+    this.load.setPath('assets/sounds/music');
+    this.load.audio('bgm', 'bg_music_1.mp3');
+
     this.load.setPath('assets/sprites/backgrounds');
     this.load.image('bg1', 'bg1.png');
     this.load.image('bg2', 'bg2.png');
@@ -123,6 +126,15 @@ export class Level1 extends Phaser.Scene {
     this.gameOverSweepSFX = this.sound.add('gameOver');
 
     this.sound.pauseOnBlur = false;
+
+    const existing = this.sound.get('bgm');
+    if (existing) {
+      if (!existing.isPlaying) existing.play({ loop: true, volume: 0.5 });
+      this.bgm = existing;
+    } else {
+      this.bgm = this.sound.add('bgm', {loop: true, volume: 0.5 });
+      this.bgm.play();
+    }
 
     this.cursors.down.on('down', () => { this.currentPiece.accelerateMovement(true); });
     this.cursors.down.on('up',   () => { this.currentPiece.accelerateMovement(false); });
