@@ -20,7 +20,7 @@ export class Grid {
         }
 
         this.graphics = scene.add.graphics();
-        this.drawGridLines();
+        //this.drawGridLines();
     }
 
     drawGridLines() {

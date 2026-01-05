@@ -15,8 +15,8 @@ export const GAME_SIZE =
 
 export const HUD_SAVED_PIECE =
 {
-    TOP: 68,
-    LEFT: 50,
+    TOP: 72,
+    LEFT: 48,
     WIDTH: 78,
     HEIGHT: 224
 };
@@ -62,7 +62,6 @@ export const GRID = {
         WIDTH: 124,
         HEIGHT: 212 
     }
-
 }
 
 export const BG_SKY = {
