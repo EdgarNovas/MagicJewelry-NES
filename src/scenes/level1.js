@@ -513,7 +513,7 @@ updateSavedPiecePosition() {
         
         // 2. IMPORTANTE: Le damos mucha profundidad (Depth) 
         // para que no se quede debajo del fondo o del rectángulo verde
-        sprite.setDepth(1000); 
+        sprite.setDepth(1); 
         
         // Opcional: Si las ves muy grandes en el HUD, puedes reducirlas un poco
         // sprite.setScale(0.8); 

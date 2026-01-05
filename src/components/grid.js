@@ -274,6 +274,7 @@ export class Grid {
                         color
                     );
                     img.setDisplaySize(this.cellSize, this.cellSize);
+                    img.setDepth(2);
                     this.staticSprites.push(img);
                 }
             }
