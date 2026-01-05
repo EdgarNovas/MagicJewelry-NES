@@ -20,7 +20,7 @@ export class Grid {
         }
 
         this.graphics = scene.add.graphics();
-        this.drawGridLines();
+        //this.drawGridLines();
     }
 
     drawGridLines() {
@@ -274,6 +274,7 @@ export class Grid {
                         color
                     );
                     img.setDisplaySize(this.cellSize, this.cellSize);
+                    img.setDepth(2);
                     this.staticSprites.push(img);
                 }
             }
