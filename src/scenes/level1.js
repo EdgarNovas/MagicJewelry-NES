@@ -45,6 +45,7 @@ export class Level1 extends Phaser.Scene {
     this.load.setPath('assets/sprites/spritesheets');
     this.load.spritesheet('stars', 'stars.png', { frameWidth: 4, frameHeight: 3 });
     this.load.spritesheet('gameoverText', 'gameOverTexts.png', { frameWidth:80, frameHeight:8 });
+    this.load.spritesheet('torch', 'torch_all.png', { frameWidth:16, frameHeight:16 });
 
     this.load.setPath('assets/sprites/static');
     this.load.image('moon', 'moon.png');
@@ -108,6 +109,8 @@ export class Level1 extends Phaser.Scene {
     this.score = 0;
     this._currentBgLevel = -1;
 
+    this.loadTorchAnims();
+
     this.setupBackgroundByLevel(getJewelryLevel(), frames);
     this.savedPiece = new Piece(this, this.grid, 3);
     this.spawnNewPiece();
@@ -137,7 +140,7 @@ export class Level1 extends Phaser.Scene {
     this.gameOverAnimTime = 40;
     this.gameOverAnimTimer = 0;
 
-    this.loadGameOverAnims()
+    this.loadGameOverAnims();
 
     this.jewelryLevelSprites = [];
     
@@ -222,6 +225,9 @@ export class Level1 extends Phaser.Scene {
     }
 
     this._currentBgLevel = level;
+
+    console.log("IDX: "+idx);
+    this.abg.torch.anims.play('torch'+(idx+1));
 
     this.game.events.on(
       'matches:cleared',
@@ -405,6 +411,20 @@ export class Level1 extends Phaser.Scene {
       frameRate: 1.5,
       repeat: -1
     });
+  }
+
+  loadTorchAnims() {
+    for (let i = 1; i <= LEVEL.NUMBER_OF_VARIATIONS; i++) {
+        const startFrame = (i - 1) * 2;
+        const endFrame = startFrame + 1;
+
+        this.anims.create({
+            key: 'torch' + i,
+            frames: this.anims.generateFrameNumbers('torch', { start: startFrame, end: endFrame }),
+            frameRate: 2.5,
+            repeat: -1
+        });
+    }
   }
 
   spawnNewPiece() {

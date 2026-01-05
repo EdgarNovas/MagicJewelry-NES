@@ -1,4 +1,5 @@
-// js/animatedbackground.js
+import { GAME_SIZE, LEVEL } from "../core/constants.js";
+
 export class AnimatedBackground {
   constructor(scene, area, cfg = {}) {
     this.scene = scene;
@@ -60,6 +61,9 @@ export class AnimatedBackground {
     } else {
       this.moon = null;
     }
+
+    this.torch = scene.add.sprite(LEVEL.TORCH_X, LEVEL.TORCH_Y, 'torch').setOrigin(0).setScale(GAME_SIZE.SCALING_MULTIPLIER);
+    this.torch.anims.play('torch1');
   }
 
   setArea(area) {
