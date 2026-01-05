@@ -17,7 +17,14 @@ export class Level1 extends Phaser.Scene {
     this.load.image('orange',  'gem4.png');
     this.load.image('blue',    'gem5.png');
     this.load.image('green',   'gem6.png');
-    this.load.image('cross',   'xblock1.png');
+    this.load.image('cross1',   'xblock1.png');
+    this.load.image('cross2',   'xblock2.png');
+    this.load.image('cross3',   'xblock3.png');
+    this.load.image('cross4',   'xblock4.png');
+    this.load.image('cross5',   'xblock5.png');
+    this.load.image('cross6',   'xblock6.png');
+    this.load.image('cross7',   'xblock7.png');
+    this.load.image('cross8',   'xblock8.png');
 
     this.load.setPath('assets/sounds/effects');
     this.load.audio('shift',    'shiftPosition.wav');

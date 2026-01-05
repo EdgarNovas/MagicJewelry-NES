@@ -1,5 +1,5 @@
-import { PIECE, SCORE } from "../core/constants.js";
-import { addJweleryPoints, setScore, setScoreToAdd } from "../core/scoreSystem.js";
+import { PIECE, SCORE, LEVEL } from "../core/constants.js";
+import { addJweleryPoints, setScore, setScoreToAdd, getJewelryLevel } from "../core/scoreSystem.js";
 
 export class Grid {
 
@@ -260,8 +260,14 @@ export class Grid {
         // dibuja todo el tablero
         for (let y = 0; y < this.rows; y++) {
             for (let x = 0; x < this.cols; x++) {
-                const color = this.cells[y][x];
+                let color = this.cells[y][x];
                 if (color) {
+                    if (color == PIECE.COLORS[PIECE.COLORS.length - 1])
+                    {
+                        const levelIndex = (getJewelryLevel() % LEVEL.NUMBER_OF_VARIATIONS) + 1;
+                        color = color + levelIndex;
+                    }
+
                     const img = this.scene.add.image(
                         this.offsetX + x * this.cellSize + this.cellSize / 2,
                         this.offsetY + y * this.cellSize + this.cellSize / 2,

@@ -37,7 +37,8 @@ export const LEVEL =
 {
     LEVEL_X: 591,
     LEVEL_Y: 222,
-    NUMBER_OF_DIGITS: 3
+    NUMBER_OF_DIGITS: 3,
+    NUMBER_OF_VARIATIONS: 8
 }
 
 export const SCORE = {

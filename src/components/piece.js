@@ -1,4 +1,4 @@
-import { PIECE } from "../core/constants.js";
+import { PIECE, LEVEL } from "../core/constants.js";
 import { getJewelryLevel } from "../core/scoreSystem.js";
 
 export class Piece {
@@ -48,7 +48,14 @@ export class Piece {
         // actualizar posiciones visuales + colores
         for (let i = 0; i < this.gems.length; i++) {
             const g = this.gems[i];
-            this.sprites[i].setTexture(g.color);
+            let color = g.color;
+            if (color == PIECE.COLORS[PIECE.COLORS.length - 1])
+            {
+                const levelIndex = (getJewelryLevel() % LEVEL.NUMBER_OF_VARIATIONS) + 1;
+                color = color + levelIndex;
+            }
+            this.sprites[i].setTexture(color);
+            
 
             const posX = this.grid.offsetX + g.x * this.grid.cellSize + this.grid.cellSize / 2;
             const posY = this.grid.offsetY + g.y * this.grid.cellSize + this.grid.cellSize / 2;
