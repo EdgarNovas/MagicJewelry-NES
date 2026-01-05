@@ -37,6 +37,8 @@ export const LEVEL =
 {
     LEVEL_X: 591,
     LEVEL_Y: 222,
+    TORCH_X: 471,
+    TORCH_Y: 168,
     NUMBER_OF_DIGITS: 3,
     NUMBER_OF_VARIATIONS: 8
 }
