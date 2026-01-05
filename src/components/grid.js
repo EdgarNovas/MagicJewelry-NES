@@ -47,6 +47,10 @@ export class Grid {
         this.cells[y][x] = color;
     }
 
+    getCell(x, y) {
+        return this.cells[y][x];
+    }
+
     clearCell(x, y) {
         if (x < 0 || x >= this.cols || y < 0 || y >= this.rows) return;
         this.cells[y][x] = null;
@@ -209,6 +213,41 @@ export class Grid {
         setScore(scoreToAdd);
 
         this.scene.matchAnimator.start(this.currentMatches);
+    }
+
+    resolveColorClear(colorToClear)
+    {
+        let extraCellsToClear = this.findAllCellsWithColor(colorToClear);
+
+        this.currentMatches = this.findMatches().concat(extraCellsToClear);
+        console.log("MATCHES ENCONTRADOS (Debería haber "+extraCellsToClear.length+" extra)");
+        for (let i= 0; i < this.currentMatches.length; i++){
+            console.log(i+": (x: "+ this.currentMatches[i].x+", y: "+this.currentMatches[i].y+")");
+        }
+        if (this.currentMatches.length === 0) return;
+
+        let totalCleared = this.currentMatches.length;
+        let scoreToAdd = totalCleared * SCORE.PER_JEWEL * Math.max(1, Math.floor(totalCleared / PIECE.NUM_OF_GEMS));
+        if(scoreToAdd != 0) setScoreToAdd(scoreToAdd);
+        setScore(scoreToAdd);
+
+        this.scene.matchAnimator.start(this.currentMatches);
+    }
+
+    findAllCellsWithColor(color) {
+        const foundCells = [];
+
+        for (let y = 0; y < this.rows; y++) {
+            for (let x = 0; x < this.cols; x++) {
+                const cellColor = this.cells[y][x];
+                if (cellColor != color) continue;
+                
+                foundCells.push({x: x, y: y});
+
+            }
+        }
+
+        return foundCells;
     }
 
     redraw() {
