@@ -30,6 +30,7 @@ export class Level1 extends Phaser.Scene {
     this.load.audio('shift',    'shiftPosition.wav');
     this.load.audio('fall',     'fallToGround.wav');
     this.load.audio('gameOver', 'gameOverSweep.wav');
+    this.load.audio('matchClear', 'matchClear.mp3');
 
     this.load.setPath('assets/sounds/music');
     this.load.audio('bgm', 'bg_music_1.mp3');
@@ -124,6 +125,7 @@ export class Level1 extends Phaser.Scene {
     this.shiftSFX = this.sound.add('shift');
     this.fallToGroundSFX = this.sound.add('fall');
     this.gameOverSweepSFX = this.sound.add('gameOver');
+    this.matchClearSFX = this.sound.add('matchClear');
 
     this.sound.pauseOnBlur = false;
 
