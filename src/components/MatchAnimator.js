@@ -35,6 +35,8 @@ export class MatchAnimator
     }
 
     start(matches) {
+        this.scene.matchClearSFX.play();
+
         this.matches = matches;
         console.log("MATCHES 0: "+matches[0].x + "  "+ matches[0].y);
         this.originalColor = this.grid.getCell(matches[0].x, matches[0].y);
