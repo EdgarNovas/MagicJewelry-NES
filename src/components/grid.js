@@ -1,5 +1,5 @@
-import { PIECE, SCORE } from "../core/constants.js";
-import { addJweleryPoints, setScore, setScoreToAdd } from "../core/scoreSystem.js";
+import { PIECE, SCORE, LEVEL } from "../core/constants.js";
+import { addJweleryPoints, setScore, setScoreToAdd, getJewelryLevel } from "../core/scoreSystem.js";
 
 export class Grid {
 
@@ -45,6 +45,10 @@ export class Grid {
     setCell(x, y, color) {
         if (x < 0 || x >= this.cols || y < 0 || y >= this.rows) return;
         this.cells[y][x] = color;
+    }
+
+    getCell(x, y) {
+        return this.cells[y][x];
     }
 
     clearCell(x, y) {
@@ -211,6 +215,41 @@ export class Grid {
         this.scene.matchAnimator.start(this.currentMatches);
     }
 
+    resolveColorClear(colorToClear)
+    {
+        let extraCellsToClear = this.findAllCellsWithColor(colorToClear);
+
+        this.currentMatches = this.findMatches().concat(extraCellsToClear);
+        console.log("MATCHES ENCONTRADOS (Debería haber "+extraCellsToClear.length+" extra)");
+        for (let i= 0; i < this.currentMatches.length; i++){
+            console.log(i+": (x: "+ this.currentMatches[i].x+", y: "+this.currentMatches[i].y+")");
+        }
+        if (this.currentMatches.length === 0) return;
+
+        let totalCleared = this.currentMatches.length;
+        let scoreToAdd = totalCleared * SCORE.PER_JEWEL * Math.max(1, Math.floor(totalCleared / PIECE.NUM_OF_GEMS));
+        if(scoreToAdd != 0) setScoreToAdd(scoreToAdd);
+        setScore(scoreToAdd);
+
+        this.scene.matchAnimator.start(this.currentMatches);
+    }
+
+    findAllCellsWithColor(color) {
+        const foundCells = [];
+
+        for (let y = 0; y < this.rows; y++) {
+            for (let x = 0; x < this.cols; x++) {
+                const cellColor = this.cells[y][x];
+                if (cellColor != color) continue;
+                
+                foundCells.push({x: x, y: y});
+
+            }
+        }
+
+        return foundCells;
+    }
+
     redraw() {
         console.log("Redibujando");
         // elimina sprites viejos
@@ -221,8 +260,14 @@ export class Grid {
         // dibuja todo el tablero
         for (let y = 0; y < this.rows; y++) {
             for (let x = 0; x < this.cols; x++) {
-                const color = this.cells[y][x];
+                let color = this.cells[y][x];
                 if (color) {
+                    if (color == PIECE.COLORS[PIECE.COLORS.length - 1])
+                    {
+                        const levelIndex = (getJewelryLevel() % LEVEL.NUMBER_OF_VARIATIONS) + 1;
+                        color = color + levelIndex;
+                    }
+
                     const img = this.scene.add.image(
                         this.offsetX + x * this.cellSize + this.cellSize / 2,
                         this.offsetY + y * this.cellSize + this.cellSize / 2,

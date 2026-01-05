@@ -36,7 +36,8 @@ export class MatchAnimator
 
     start(matches) {
         this.matches = matches;
-        this.originalColor = this.grid.cells[matches[0].y][matches[0].x];
+        console.log("MATCHES 0: "+matches[0].x + "  "+ matches[0].y);
+        this.originalColor = this.grid.getCell(matches[0].x, matches[0].y);
 
         this.phase = this.phases.FLASHING;
 

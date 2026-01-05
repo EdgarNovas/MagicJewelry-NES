@@ -17,7 +17,14 @@ export class Level1 extends Phaser.Scene {
     this.load.image('orange',  'gem4.png');
     this.load.image('blue',    'gem5.png');
     this.load.image('green',   'gem6.png');
-    this.load.image('cross',   'xblock1.png');
+    this.load.image('cross1',   'xblock1.png');
+    this.load.image('cross2',   'xblock2.png');
+    this.load.image('cross3',   'xblock3.png');
+    this.load.image('cross4',   'xblock4.png');
+    this.load.image('cross5',   'xblock5.png');
+    this.load.image('cross6',   'xblock6.png');
+    this.load.image('cross7',   'xblock7.png');
+    this.load.image('cross8',   'xblock8.png');
 
     this.load.setPath('assets/sounds/effects');
     this.load.audio('shift',    'shiftPosition.wav');
@@ -274,11 +281,13 @@ export class Level1 extends Phaser.Scene {
     if (this.gameOver)
     {
       this.gameOverAnimTimer += delta;
+
       if (this.gameOverAnimTimer >= this.gameOverAnimTime) {
         this.gameOverAnimTimer = 0;
         this.grid.setCell(this.gameOverAnimCol, this.gameOverAnimRow, 'cross');
         this.grid.redraw();
         this.gameOverAnimCol--;
+
         if (this.gameOverAnimCol < 0 && this.gameOverAnimRow > 0) {
           this.gameOverSweepSFX.play();
           this.gameOverAnimCol = GRID.COLUMNS - 1;
@@ -306,6 +315,9 @@ export class Level1 extends Phaser.Scene {
 
     const newLevel = Math.floor(getJewelryPoints() / 10);
     if (newLevel !== this._currentBgLevel) {
+      console.log("Detectado cambio de nivel");
+      this.currentPiece.changeToColorClearPiece();
+
       const starsTex = this.textures.get('stars');
       const frames = starsTex && starsTex.frameTotal >= 4 ? [0,1,2,3] : [0];
       this.setupBackgroundByLevel(newLevel, frames);
@@ -313,7 +325,7 @@ export class Level1 extends Phaser.Scene {
 
     setJewelryLevel(newLevel);
 
-    // --- Actualizar los valores del Jewelry, level y score ---
+    // --- Actualizar los valores de los textos de Jewelry, level y score ---
     const jewelry = getJewelryPoints().toString().padStart(JEWELRY.NUMBER_OF_DIGITS, '0');
 
     this.jewelryLevelSprites[0].setFrame(parseInt(jewelry[0]));

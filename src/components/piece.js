@@ -1,4 +1,4 @@
-import { PIECE } from "../core/constants.js";
+import { PIECE, LEVEL } from "../core/constants.js";
 import { getJewelryLevel } from "../core/scoreSystem.js";
 
 export class Piece {
@@ -9,6 +9,7 @@ export class Piece {
         this.y = -PIECE.NUM_OF_GEMS; // empieza arriba del tablero
         this.gems = [];
         this.alive = true;
+        this.regularPiece = true;
 
         const colors = PIECE.COLORS;
         for (let i = 0; i < PIECE.NUM_OF_GEMS; i++) {
@@ -47,7 +48,14 @@ export class Piece {
         // actualizar posiciones visuales + colores
         for (let i = 0; i < this.gems.length; i++) {
             const g = this.gems[i];
-            this.sprites[i].setTexture(g.color);
+            let color = g.color;
+            if (color == PIECE.COLORS[PIECE.COLORS.length - 1])
+            {
+                const levelIndex = (getJewelryLevel() % LEVEL.NUMBER_OF_VARIATIONS) + 1;
+                color = color + levelIndex;
+            }
+            this.sprites[i].setTexture(color);
+            
 
             const posX = this.grid.offsetX + g.x * this.grid.cellSize + this.grid.cellSize / 2;
             const posY = this.grid.offsetY + g.y * this.grid.cellSize + this.grid.cellSize / 2;
@@ -63,8 +71,19 @@ export class Piece {
         if (g.y + 1 >= this.grid.rows || this.grid.isOccupied(g.x, g.y + 1)) {
             this.scene.fallToGroundSFX.play(); // Problem
             
+            if (!this.regularPiece)
+            {
+                const colorBelow = this.grid.getCell(g.x, g.y+1);
+                console.log("Color de debajo: "+colorBelow);
+                this.changeToColor(colorBelow);
+            }
+
             this.grid.mergePiece(this);
-            this.grid.resolveMatches();
+            if (this.regularPiece)
+                this.grid.resolveMatches();
+            else 
+                this.grid.resolveColorClear(this.gems[0].color);
+
             this.grid.redraw();
             this.alive = false;
 
@@ -76,8 +95,9 @@ export class Piece {
                 }
             }
 
+            console.log("Ahora se hace el spawn  -------------------------");
             this.scene.spawnNewPiece();
-
+ 
             return;
         }         
 
@@ -137,4 +157,15 @@ export class Piece {
         this.scene.shiftSFX.play();
     }   
 
+    changeToColorClearPiece() {
+        console.log("Cambiar pieza a comodín");
+        this.changeToColor('cross');
+        this.regularPiece = false;
+    }
+
+    changeToColor(color) {
+        for (let i = 0; i < PIECE.NUM_OF_GEMS; i++) {
+            this.gems[i].color = color;
+        }
+    }
 }
